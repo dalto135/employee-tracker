@@ -74,56 +74,79 @@ function starterPrompt() {
       type: 'list',
       name: 'start',
       message: 'What would you like to do?',
-      choices: ['View All Employees', 'View All Employees By Department', 'View All Employees By Manager', 'Add Employee',
-    'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'View All Roles', 'Exit'],
+      choices: ['View All Departments', 'View All Roles', 'View All Employees', 'View All Employees By Department',
+      'View All Employees By Manager', 'Add Department', 'Add Role', 'Add Employee', 'Remove Department',
+      'Remove Role', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'View All Roles',
+      'View a Department\'s Utilized Budget', 'Exit'],
     },
   ])
   .then(answers => {
       switch(answers.start) {
+        case 'View All Departments':
+          viewAllDept()
+        break;
+        case 'View All Roles':
+          viewAllRoles()
+        break;
         case 'View All Employees':
           viewAll()
         break;
         case 'View All Employees By Department':
           viewAllByDept()
-          .catch(function(err) {
-            console.error(err);
-          });
+          // .catch(function(err) {
+          //   console.error(err);
+          // });
         break;
         case 'View All Employees By Manager':
           viewAllByManager()
-          .catch(function(err) {
-            console.error(err);
-          });
+          // .catch(function(err) {
+          //   console.error(err);
+          // });
+        break;
+        case 'Add Department':
+          addDept()
+        break;
+        case 'Add Role':
+          addRole()
         break;
         case 'Add Employee':
           addEmployee()
-          .catch(function(err) {
-            console.error(err);
-          });
+          // .catch(function(err) {
+          //   console.error(err);
+          // });
+        break;
+        case 'Remove Department':
+          removeDept()
+        break;
+        case 'Remove Role':
+          removeRole()
         break;
         case 'Remove Employee':
           removeEmployee()
-          .catch(function(err) {
-            console.error(err);
-          });
+          // .catch(function(err) {
+          //   console.error(err);
+          // });
         break;
         case 'Update Employee Role':
           updateRole()
-          .catch(function(err) {
-            console.error(err);
-          });
+          // .catch(function(err) {
+          //   console.error(err);
+          // });
         break;
         case 'Update Employee Manager':
           updateManager()
-          .catch(function(err) {
-            console.error(err);
-          });
+          // .catch(function(err) {
+          //   console.error(err);
+          // });
         break;
         case 'View All Roles':
           viewAllRoles()
-          .catch(function(err) {
-            console.error(err);
-          });
+          // .catch(function(err) {
+          //   console.error(err);
+          // });
+        break;
+        case 'View a Department\'s Utilized Budget':
+          viewBudget()
         break;
         default:
           // writeFileAsync('./employee-tracker.sql', generateHTML());
@@ -133,6 +156,14 @@ function starterPrompt() {
   })
 }
 
+//View all departments
+function viewAllDept() {
+
+}
+//View all roles
+function viewAllRoles() {
+
+}
 //View all employees
 function viewAll() {
   let names = [];
@@ -207,6 +238,16 @@ function viewAllByManager() {
   })
 }
 
+//Add departments
+function addDept() {
+
+}
+
+//Add roles
+function addRole() {
+
+}
+
 //Add employees
 function addEmployee() {
   let roleTitles = [];
@@ -221,25 +262,25 @@ function addEmployee() {
     {
       type: 'input',
       name: 'firstname',
-      message: "What is the employee's first name?",
+      message: 'What is the employee\'s first name?',
       validate: stringValidator,
     },
     {
       type: 'input',
       name: 'lastname',
-      message: "What is the employee's last name?",
+      message: 'What is the employee\'s last name?',
       validate: stringValidator,
     },
     {
       type: 'list',
       name: 'role',
-      message: "What is the employee's role?",
+      message: 'What is the employee\'s role?',
       choices: roleTitles,
     },
     {
       type: 'list',
       name: 'manager',
-      message: "Who is the employee's manager?",
+      message: 'Who is the employee\'s manager?',
       choices: managers,
     },
   ])
@@ -263,6 +304,16 @@ function addEmployee() {
 
     starterPrompt()
   })
+}
+
+//Remove departments
+function removeDept() {
+
+}
+
+//Remove roles
+function removeRole() {
+
 }
 
 //Remove employees
@@ -320,7 +371,7 @@ function updateRole() {
     {
       type: 'list',
       name: 'role',
-      message: "What is the employee's new role?",
+      message: 'What is the employee\'s new role?',
       choices: roleTitles,
     },
   ])
@@ -360,7 +411,7 @@ function updateManager() {
     {
       type: 'list',
       name: 'manager',
-      message: "Who is the employee's new manager?",
+      message: 'Who is the employee\'s new manager?',
       choices: managers,
     },
   ])
@@ -403,6 +454,11 @@ function viewAllRoles() {
   .then(answers => {
     starterPrompt();
   })
+}
+
+//View utilized budget of a department
+function viewBudget() {
+
 }
 
 const generateHTML = () =>
