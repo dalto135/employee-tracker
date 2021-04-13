@@ -1,7 +1,7 @@
 //Global variables
-// const Manager = require('./lib/manager');
-// const Engineer = require('./lib/engineer');
-// const Intern = require('./lib/intern');
+const Department = require('./develop/department');
+const Role = require('./develop/role');
+const Employee = require('./develop/employee');
 
 let departments = [
   {
@@ -141,7 +141,7 @@ function starterPrompt() {
         case 'View a Department\'s Utilized Budget':
           viewBudget()
         break;
-        
+
         default:
           // writeFileAsync('./employee-tracker.sql', generateHTML());
           // console.log('Wrote to employee-tracker.sql');
