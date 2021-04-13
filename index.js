@@ -3,50 +3,20 @@ const Department = require('./develop/department');
 const Role = require('./develop/role');
 const Employee = require('./develop/employee');
 
-let departments = [
-  {
-    id: Math.random(),
-    name: 'Marketing'
-  },
-  {
-    id: Math.random(),
-    name: 'Finance',
-  },
-];
+let marketing = new Department(Math.random(), 'Marketing');
+let finance = new Department(Math.random(), 'Finance');
+let management = new Department(Math.random(), 'Management');
+let departments = [marketing, finance, management];
 
-let roles = [
-  {
-    id: Math.random(),
-    title: 'Engineer',
-    salary: 75000.00,
-    department: departments[0],
-  }, 
-  {
-    id: Math.random(),
-    title: 'Intern',
-    salary: 75000.00,
-    department: departments[1],
-  },
-];
+let engineer = new Role(Math.random(), 'Engineer', 75000.00, departments[0].id);
+let intern = new Role(Math.random(), 'Intern', 75000.00, departments[1].id);
+let manager = new Role(Math.random(), 'Manager', 75000.00, departments[2].id);
+let roles = [engineer, intern, manager];
 
-let managers = ['Barb Walters', 'Alex Bog'];
-
-let employees = [
-  {
-    id: Math.random(),
-    firstName: 'Dalton',
-    lastName: 'Wilkins',
-    role: roles[0],
-    manager: managers[0],
-  },
-  {
-    id: Math.random(),
-    firstName: 'Steve',
-    lastName: 'Steverson',
-    role: roles[1],
-    manager: managers[1],
-  },
-];
+let dalton = new Employee(Math.random(), 'Dalton', 'Wilkins', roles[2].id, Math.random());
+let barb = new Employee(Math.random(), 'Barb', 'Walters', roles[0].id, dalton.id);
+let steve = new Employee(Math.random(), 'Steve', 'Steverson', roles[1].id, dalton.id);
+let employees = [dalton, barb, steve];
 
 const inquirer = require('inquirer');
 const fs = require('fs');
@@ -148,12 +118,8 @@ function starterPrompt() {
 
 //View all departments
 function viewAllDept() {
-  let names = [];
-  departments.forEach(i =>
-    names.push(i.name)
-  )
-  names.forEach(i => 
-    console.log(i)
+  departments.forEach(i => 
+    console.log(i.name)
   )
   return inquirer.prompt([
     {
@@ -169,12 +135,8 @@ function viewAllDept() {
 }
 //View all roles
 function viewAllRoles() {
-  let names = [];
-  roles.forEach(i =>
-    names.push(i.title)
-  )
-  names.forEach(i => 
-    console.log(i)
+  roles.forEach(i => 
+    console.log(i.title)
   )
   return inquirer.prompt([
     {
@@ -190,12 +152,8 @@ function viewAllRoles() {
 }
 //View all employees
 function viewAll() {
-  let names = [];
-  employees.forEach(i =>
-    names.push(i.firstName + ' ' + i.lastName)
-  )
-  names.forEach(i => 
-    console.log(i)
+  employees.forEach(i => 
+    console.log(i.firstName + ' ' + i.lastName)
   )
   return inquirer.prompt([
     {
@@ -216,7 +174,7 @@ function viewAllByDept() {
     console.log(departments[i].name + ':');
 
     for (let j = 0; j < employees.length; j++) {
-      if (employees[j].role.department === departments[i]) {
+      if (employees[j].role.department === departments[i].id) {
         console.log(employees[j].firstName + ' ' + employees[j].lastName);
       }
     }
@@ -238,11 +196,20 @@ function viewAllByDept() {
 
 //View all employees by manager
 function viewAllByManager() {
+  let managers = [];
+  employees.forEach(i => {
+      if (i.role === roles[2].id) {
+        managers.push(i);
+      }
+    }
+  )
+  // console.log(managers);
+
   for (let i = 0; i < managers.length; i++) {
-    console.log(managers[i] + ':');
+    console.log(managers[i].firstName + ' ' + managers[i].lastName + ':');
 
     for (let j = 0; j < employees.length; j++) {
-      if (employees[j].manager === managers[i]) {
+      if (employees[j].manager === managers[i].id) {
         console.log(employees[j].firstName + ' ' + employees[j].lastName);
       }
     }
@@ -278,9 +245,9 @@ function addEmployee() {
   roles.forEach(i =>
     roleTitles.push(i.title)
   )
-  roleTitles.forEach(i => 
-    console.log(i)
-  )
+  // roleTitles.forEach(i => 
+  //   console.log(i)
+  // )
 
   return inquirer.prompt([
     {
@@ -317,15 +284,17 @@ function addEmployee() {
       }
     }
 
-    let newEmployee = {
-      id: Math.random(),
-      firstName: answers.firstname,
-      lastName: answers.lastname,
-      role: getRole,
-      manager: answers.manager,
-    };
-    employees.push(newEmployee);
+    // let newEmployee = {
+    //   id: Math.random(),
+    //   firstName: answers.firstname,
+    //   lastName: answers.lastname,
+    //   role: getRole,
+    //   manager: answers.manager,
+    // };
 
+    let newEmployee = new Employee(Math.random(), answers.firstname, answers.lastname, getRole, answers.manager);
+    employees.push(newEmployee);
+    console.log(newEmployee);
     starterPrompt()
   })
 }

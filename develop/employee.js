@@ -4,7 +4,7 @@ class Employee {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
-        this.managerId = manager;
+        this.manager = manager;
     }
 
 
