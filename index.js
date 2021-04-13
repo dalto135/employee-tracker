@@ -2,8 +2,6 @@
 // const Manager = require('./lib/manager');
 // const Engineer = require('./lib/engineer');
 // const Intern = require('./lib/intern');
-// const emailValidatorRegex = require("email-validator");
-//npm i email-validator
 
 let departments = [
   {
@@ -84,9 +82,6 @@ function starterPrompt() {
       switch(answers.start) {
         case 'View All Employees':
           viewAll()
-          // .catch(function(err) {
-          //   console.error(err);
-          // });
         break;
         case 'View All Employees By Department':
           viewAllByDept()
@@ -131,8 +126,8 @@ function starterPrompt() {
           });
         break;
         default:
-          // writeFileAsync('dist/index.html', generateHTML());
-          // console.log('Wrote to index.html');
+          // writeFileAsync('./employee-tracker.sql', generateHTML());
+          // console.log('Wrote to employee-tracker.sql');
         break;
       }
   })
@@ -156,11 +151,6 @@ function viewAll() {
     },
   ])
   .then(answers => {
-    // switch(answers.return) {
-    //   default:
-    //     starterPrompt()
-    //   break;
-    // }
     starterPrompt()
   })
 }
@@ -187,11 +177,7 @@ function viewAllByDept() {
     },
   ])
   .then(answers => {
-    switch(answers.return) {
-      default:
-        starterPrompt()
-      break;
-    }
+    starterPrompt();
   })
 }
 
@@ -217,11 +203,7 @@ function viewAllByManager() {
     },
   ])
   .then(answers => {
-    switch(answers.return) {
-      default:
-        starterPrompt()
-      break;
-    }
+    starterPrompt();
   })
 }
 
@@ -267,10 +249,8 @@ function addEmployee() {
     for (let i = 0; i < roles.length; i++) {
       if (roleTitles[i] === answers.role) {
         getRole = roles[i];
-        // console.log('getRole: ' + getRole);
       }
     }
-
 
     let newEmployee = {
       id: Math.random(),
@@ -280,19 +260,15 @@ function addEmployee() {
       manager: answers.manager,
     };
     employees.push(newEmployee);
-    console.log(newEmployee);
-    console.log(newEmployee.role.title);
 
     starterPrompt()
-    .catch(function(err) {
-        console.error(err);
-    });
   })
 }
 
 //Remove employees
 function removeEmployee() {
   let employeeNames = [];
+
   employees.forEach(i =>
     employeeNames.push(i.firstName + ' ' + i.lastName)
   )
@@ -313,9 +289,6 @@ function removeEmployee() {
       }
     }
     employees = newList;
-    console.log(employees);
-    // console.log(departments[0]);
-    // console.log(employees[0].role.department);
 
     starterPrompt();
   })
@@ -324,6 +297,7 @@ function removeEmployee() {
 //Update role
 function updateRole() {
   let employeeNames = [];
+
   employees.forEach(i =>
     employeeNames.push(i.firstName + ' ' + i.lastName)
   )
@@ -335,6 +309,7 @@ function updateRole() {
   roleTitles.forEach(i => 
     console.log(i)
   )
+
   return inquirer.prompt([
     {
       type: 'list',
@@ -350,7 +325,6 @@ function updateRole() {
     },
   ])
   .then(answers => {
-    // let getEmployee;
     let getRole;
 
     for (let i = 0; i < roles.length; i++) {
@@ -365,12 +339,6 @@ function updateRole() {
       }
     }
 
-    // switch(answers.role) {
-    //   default:
-    //     console.log(employees[1].role.title);
-    //     starterPrompt()
-    //   break;
-    // }
     starterPrompt();
   })
 }
@@ -382,13 +350,6 @@ function updateManager() {
     employeeNames.push(i.firstName + ' ' + i.lastName)
   )
 
-  // let managerNames = [];
-  // managers.forEach(i =>
-  //   managerNames.push(i)
-  // )
-  // managerNames.forEach(i => 
-  //   console.log(i)
-  // )
   return inquirer.prompt([
     {
       type: 'list',
@@ -404,7 +365,6 @@ function updateManager() {
     },
   ])
   .then(answers => {
-    // let getEmployee;
     let getManager;
 
     for (let i = 0; i < managers.length; i++) {
@@ -419,13 +379,7 @@ function updateManager() {
       }
     }
 
-    switch(answers.role) {
-      default:
-        console.log(employees[0].manager);
-        starterPrompt()
-      break;
-    }
-  
+    starterPrompt();
   })
 }
 
@@ -447,11 +401,7 @@ function viewAllRoles() {
     },
   ])
   .then(answers => {
-    switch(answers.roles) {
-      default:
-        starterPrompt()
-      break;
-    }
+    starterPrompt();
   })
 }
 
