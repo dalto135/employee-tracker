@@ -167,9 +167,17 @@ function viewAll() {
 
 //View all employees by department
 function viewAllByDept() {
-  employees.forEach(i =>
-    console.log(i)
-  )
+  for (let i = 0; i < departments.length; i++) {
+    console.log(departments[i].name + ':');
+
+    for (let j = 0; j < employees.length; j++) {
+      if (employees[j].role.department === departments[i]) {
+        console.log(employees[j].firstName + ' ' + employees[j].lastName);
+      }
+    }
+    console.log();
+  }
+
   return inquirer.prompt([
     {
       type: 'list',
@@ -189,9 +197,17 @@ function viewAllByDept() {
 
 //View all employees by manager
 function viewAllByManager() {
-  employees.forEach(i =>
-    console.log(i)
-  )
+  for (let i = 0; i < managers.length; i++) {
+    console.log(managers[i] + ':');
+
+    for (let j = 0; j < employees.length; j++) {
+      if (employees[j].manager === managers[i]) {
+        console.log(employees[j].firstName + ' ' + employees[j].lastName);
+      }
+    }
+    console.log();
+  }
+
   return inquirer.prompt([
     {
       type: 'list',
