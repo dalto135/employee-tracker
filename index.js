@@ -5,95 +5,88 @@
 // const emailValidatorRegex = require("email-validator");
 //npm i email-validator
 
-let managerDiv = '';
-let engineerDiv = '';
-let internDiv = '';
+let departments = [
+  {
+    id: Math.random(),
+    name: 'Marketing'
+  },
+  {
+    id: Math.random(),
+    name: 'Finance',
+  },
+];
+
+let roles = [
+  {
+    id: Math.random(),
+    title: 'Engineer',
+    salary: 75000.00,
+    department: departments[0],
+  }, 
+  {
+    id: Math.random(),
+    title: 'Intern',
+    salary: 75000.00,
+    department: departments[1],
+  },
+];
+
+let managers = ['Barb Walters', 'Alex Bog'];
+
+let employees = [
+  {
+    id: Math.random(),
+    firstname: 'Dalton',
+    lastname: 'Wilkins',
+    role: roles[0],
+    manager: managers[0],
+  },
+  {
+    id: Math.random(),
+    firstname: 'Steve',
+    lastname: 'Steverson',
+    role: roles[1],
+    manager: managers[1],
+  },
+];
 
 const inquirer = require('inquirer');
 const fs = require('fs');
 const util = require('util');
-
 const writeFileAsync = util.promisify(fs.writeFile);
 
-// function addMember() {
-//   return inquirer.prompt([
-//     {
-//       type: 'list',
-//       name: 'team',
-//       message: 'Would you like to add an engineer, intern, or finish building your team?',
-//       choices: ['Engineer', 'Intern', 'Finish building team'],
-//     },
-//   ])
-//   .then(answers => {
-//     switch(answers.team) {
-//       case 'Engineer':
-//         engineer()
-//         .catch(function(err) {
-//           console.error(err);
-//       });
-//         break;
-//       case 'Intern':
-//         intern()
-//         .catch(function(err) {
-//           console.error(err);
-//       });
-//         break;
-//       default:
-//         writeFileAsync('dist/index.html', generateHTML());
-//         console.log('Wrote to index.html');
-//         break;
-//     }
-//   })
-// }
-
-const nameValidator = async (input) => {
+const stringValidator = async (input) => {
   const nameValid = /^[A-Za-z]+$/.test(input);
   if (!nameValid) {
-    return 'Name must only contain letters'; 
+    return 'Input must only contain letters'; 
   }
-  
   return true;
 };
-// const idValidator = async (input) => {
-//   const idValid = /^[0-9]+$/.test(input);
-//   if (!idValid) {
-//     return 'ID must only contain numbers'; 
-//   }
-//   return true;
-// };
-// const emailValidator = async (input) => {
-//   const emailValid = emailValidatorRegex.validate(input);
-//   if (!emailValid) {
-//     return 'Not a valid email address'; 
-//   }
-//   return true;
-// };
-// const officeNumberValidator = async (input) => {
-//   const officeNumberValid = /^[0-9]+$/.test(input);
-//   if (!officeNumberValid) {
-//     return 'Office Number must only contain numbers'; 
-//   }
-//   return true;
-// };
+const numberValidator = async (input) => {
+  const idValid = /^[0-9]+$/.test(input);
+  if (!idValid) {
+    return 'Input must only contain numbers'; 
+  }
+  return true;
+};
 
 function starterPrompt() {
-  let prompts = [viewAll(), viewAllByDept(), viewAllByManager(), addEmployee(), removeEmployee(), updateRole(), updateManager(), viewAllRoles()];
   return inquirer.prompt([
     {
       type: 'list',
       name: 'start',
       message: 'What would you like to do?',
       choices: ['View All Employees', 'View All Employees By Department', 'View All Employees By Manager', 'Add Employee',
-    'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'View All Roles'],
+    'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'View All Roles', 'Exit'],
     },
   ])
   .then(answers => {
       switch(answers.start) {
         case 'View All Employees':
           viewAll()
-          .catch(function(err) {
-            console.error(err);
-          });
+          // .catch(function(err) {
+          //   console.error(err);
+          // });
         break;
         case 'View All Employees By Department':
           viewAllByDept()
@@ -141,44 +134,78 @@ function starterPrompt() {
           // writeFileAsync('dist/index.html', generateHTML());
           // console.log('Wrote to index.html');
         break;
-  }
-})
+      }
+  })
 }
 
 //View all employees
 function viewAll() {
+  let names = [];
+  employees.forEach(i =>
+    names.push(i.firstname + ' ' + i.lastname)
+  )
+  names.forEach(i => 
+    console.log(i)
+  )
   return inquirer.prompt([
     {
-      type: 'input',
-      name: 'firstname',
-      message: "What is the employee's first name?",
-      validate: nameValidator,
+      type: 'list',
+      name: 'return',
+      message: 'Hit enter to return home',
+      choices: [''],
     },
   ])
+  .then(answers => {
+    switch(answers.return) {
+      default:
+        starterPrompt()
+      break;
+    }
+  })
 }
 
 //View all employees by department
 function viewAllByDept() {
+  employees.forEach(i =>
+    console.log(i)
+  )
   return inquirer.prompt([
     {
-      type: 'input',
-      name: 'firstname',
-      message: "What is the employee's first name?",
-      validate: nameValidator,
+      type: 'list',
+      name: 'return',
+      message: 'Hit enter to return home',
+      choices: [''],
     },
   ])
+  .then(answers => {
+    switch(answers.return) {
+      default:
+        starterPrompt()
+      break;
+    }
+  })
 }
 
 //View all employees by manager
 function viewAllByManager() {
+  employees.forEach(i =>
+    console.log(i)
+  )
   return inquirer.prompt([
     {
-      type: 'input',
-      name: 'firstname',
-      message: "What is the employee's first name?",
-      validate: nameValidator,
+      type: 'list',
+      name: 'return',
+      message: 'Hit enter to return home',
+      choices: [''],
     },
   ])
+  .then(answers => {
+    switch(answers.return) {
+      default:
+        starterPrompt()
+      break;
+    }
+  })
 }
 
 //Add employees
@@ -188,27 +215,42 @@ function addEmployee() {
       type: 'input',
       name: 'firstname',
       message: "What is the employee's first name?",
-      validate: nameValidator,
+      validate: stringValidator,
     },
     {
       type: 'input',
       name: 'lastname',
       message: "What is the employee's last name?",
-      validate: nameValidator,
+      validate: stringValidator,
     },
     {
       type: 'list',
       name: 'role',
       message: "What is the employee's role?",
-      choice: ['hello', 'world'],
+      choices: roles,
     },
     {
       type: 'list',
       name: 'manager',
       message: "Who is the employee's manager?",
-      choice: ['hello', 'world'],
+      choices: managers,
     },
   ])
+  .then(answers => {
+    let newEmployee = {
+      id: Math.random(),
+      firstName: answers.firstname,
+      lastName: answers.lastname,
+      role: answers.role,
+      manager: answers.manager,
+    };
+    employees.push(newEmployee);
+
+    starterPrompt()
+    .catch(function(err) {
+        console.error(err);
+    });
+  })
 }
 
 //Remove employees
@@ -216,132 +258,96 @@ function removeEmployee() {
   return inquirer.prompt([
     {
       type: 'input',
-      name: 'firstname',
-      message: "What is the employee's first name?",
-      validate: nameValidator,
+      name: 'remove',
+      message: 'Which employee do you want to remove?',
+      choices: ['hello', 'world'],
     },
   ])
 }
 
 //Update role
 function updateRole() {
+  
+
+  let roleTitles = [];
+  employees.forEach(i =>
+    roleTitles.push(i.firstname + ' ' + i.lastname)
+  )
+  roleTitles.forEach(i => 
+    console.log(i)
+  )
   return inquirer.prompt([
     {
-      type: 'input',
-      name: 'firstname',
-      message: "What is the employee's first name?",
-      validate: nameValidator,
+      type: 'list',
+      name: 'employee',
+      message: "Choose an employee",
+      choices: employeeNames,
+    },
+    {
+      type: 'list',
+      name: 'role',
+      message: "What is the employee's new role?",
+      choices: roleTitles,
     },
   ])
+  .then(answers => {
+    let getEmployee;
+    let employeeIds = [];
+    employees.forEach(i =>
+      employeeIds.push(i.id)
+    )
+    employeeNames.forEach(i => 
+      console.log(i)
+    )
+
+
+  let employeeNames = [];
+  employees.forEach(i =>
+    employeeNames.push(i.firstname + ' ' + i.lastname)
+  )
+  employeeNames.forEach(i => 
+    console.log(i)
+  )
+  })
 }
 
 //Update manager
 function updateManager() {
   return inquirer.prompt([
     {
-      type: 'input',
+      type: 'list',
       name: 'firstname',
       message: "What is the employee's first name?",
-      validate: nameValidator,
+      choices: managers,
     },
   ])
 }
 
 //View all roles
 function viewAllRoles() {
+  let names = [];
+  roles.forEach(i =>
+    names.push(i.title)
+  )
+  names.forEach(i => 
+    console.log(i)
+  )
   return inquirer.prompt([
     {
-      type: 'input',
-      name: 'firstname',
-      message: "What is the employee's first name?",
-      validate: nameValidator,
+      type: 'list',
+      name: 'roles',
+      message: 'Hit enter to return home',
+      choices: [''],
     },
   ])
+  .then(answers => {
+    switch(answers.roles) {
+      default:
+        starterPrompt()
+      break;
+    }
+  })
 }
-
-// function engineer() {
-//     return inquirer.prompt([
-//       {
-//         type: 'input',
-//         name: 'name',
-//         message: 'What is the name of your engineer?',
-//         validate: nameValidator,
-//       },
-//       {
-//         type: 'input',
-//         name: 'id',
-//         message: 'Enter their employee ID?',
-//         validate: idValidator,
-//       },
-//       {
-//         type: 'input',
-//         name: 'email',
-//         message: 'Enter their email address',
-//         validate: emailValidator,
-//       },
-//       {
-//         type: 'input',
-//         name: 'github',
-//         message: 'Enter their GitHub username',
-//       },
-//     ])
-//     .then(answers => {
-//       const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
-//       engineerDiv += 
-//       `
-//       <div>
-//         <p>Name: ${engineer.getName()}</p>
-//         <p>Role: ${engineer.getRole()}</p>
-//         <p>ID: ${engineer.getId()}</p>
-//         <p>Email: <a href='mailto:${engineer.getEmail()}'>${engineer.getEmail()}</a></p>
-//         <p>GitHub: <a href='https://github.com/${engineer.getGithub()}' target='_blank'>${engineer.getGithub()}</a></p>
-//       </div>
-//       `;
-//       addMember();
-//     })
-//   }
-
-  // function intern() {
-  //   return inquirer.prompt([
-  //     {
-  //       type: 'input',
-  //       name: 'name',
-  //       message: 'What is the name of your intern?',
-  //       validate: nameValidator,
-  //     },
-  //     {
-  //       type: 'input',
-  //       name: 'id',
-  //       message: 'Enter their employee ID?',
-  //       validate: idValidator,
-  //     },
-  //     {
-  //       type: 'input',
-  //       name: 'email',
-  //       message: 'Enter their email address',
-  //       validate: emailValidator,
-  //     },
-  //     {
-  //       type: 'input',
-  //       name: 'school',
-  //       message: 'What school do they attend?',
-  //     },
-  //   ])
-  //   .then(answers => {
-  //     const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
-  //     internDiv += 
-  //     `
-  //     <div>
-  //       <p>Name: ${intern.getName()}</p>
-  //       <p>Role: ${intern.getRole()}</p>
-  //       <p>ID: ${intern.getId()}</p>
-  //       <p>Email: <a href='mailto:${intern.getEmail()}'>${intern.getEmail()}</a></p>
-  //       <p>School: ${intern.getSchool()}</p>
-  //     </div>
-  //     `;
-  //     addMember();
-  //   })
-  // }
 
 const generateHTML = () =>
 `
