@@ -10,22 +10,22 @@ const writeFileAsync = util.promisify(fs.writeFile);
 
 const cTable = require('console.table');
 
-const mysql = require('mysql');
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'me',
-  password : 'biscuitbill',
-  database : 'employee_trackerdb'
-});
+// const mysql = require('mysql');
+// var connection = mysql.createConnection({
+//   host     : 'localhost:3306',
+//   user     : 'me',
+//   password : 'biscuitbill',
+//   database : 'employee_trackerdb'
+// });
  
-connection.connect(function(err) {
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
-  }
+// connection.connect(function(err) {
+//   if (err) {
+//     console.error('error connecting: ' + err.stack);
+//     return;
+//   }
  
-  console.log('connected as id ' + connection.threadId);
-});
+//   console.log('connected as id ' + connection.threadId);
+// });
 
 console.table([
   {
@@ -37,13 +37,13 @@ console.table([
   }
 ]);
 
- console.table()
+//  console.table()
 // connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
 //   if (error) throw error;
 //   console.log('The solution is: ', results[0].solution);
 // });
  
-connection.end();
+// connection.end();
 
 let marketing = new Department(Math.random(), 'Marketing');
 let finance = new Department(Math.random(), 'Finance');
@@ -249,8 +249,7 @@ function viewAllByManager() {
       if (i.role === roles[2].id) {
         managers.push(i);
       }
-    }
-  )
+  })
   // console.log(managers);
 
   for (let i = 0; i < managers.length; i++) {
