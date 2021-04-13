@@ -76,7 +76,7 @@ function starterPrompt() {
       message: 'What would you like to do?',
       choices: ['View All Departments', 'View All Roles', 'View All Employees', 'View All Employees By Department',
       'View All Employees By Manager', 'Add Department', 'Add Role', 'Add Employee', 'Remove Department',
-      'Remove Role', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'View All Roles',
+      'Remove Role', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager',
       'View a Department\'s Utilized Budget', 'Exit'],
     },
   ])
@@ -134,10 +134,6 @@ function starterPrompt() {
           updateManager()
         break;
 
-        case 'View All Roles':
-          viewAllRoles()
-        break;
-
         case 'View a Department\'s Utilized Budget':
           viewBudget()
         break;
@@ -152,11 +148,45 @@ function starterPrompt() {
 
 //View all departments
 function viewAllDept() {
-
+  let names = [];
+  departments.forEach(i =>
+    names.push(i.name)
+  )
+  names.forEach(i => 
+    console.log(i)
+  )
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'return',
+      message: 'Hit enter to return home',
+      choices: [''],
+    },
+  ])
+  .then(answers => {
+    starterPrompt()
+  })
 }
 //View all roles
 function viewAllRoles() {
-
+  let names = [];
+  roles.forEach(i =>
+    names.push(i.title)
+  )
+  names.forEach(i => 
+    console.log(i)
+  )
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'return',
+      message: 'Hit enter to return home',
+      choices: [''],
+    },
+  ])
+  .then(answers => {
+    starterPrompt()
+  })
 }
 //View all employees
 function viewAll() {
@@ -424,28 +454,6 @@ function updateManager() {
       }
     }
 
-    starterPrompt();
-  })
-}
-
-//View all roles
-function viewAllRoles() {
-  let names = [];
-  roles.forEach(i =>
-    names.push(i.title)
-  )
-  names.forEach(i => 
-    console.log(i)
-  )
-  return inquirer.prompt([
-    {
-      type: 'list',
-      name: 'roles',
-      message: 'Hit enter to return home',
-      choices: [''],
-    },
-  ])
-  .then(answers => {
     starterPrompt();
   })
 }
