@@ -85,69 +85,63 @@ function starterPrompt() {
         case 'View All Departments':
           viewAllDept()
         break;
+
         case 'View All Roles':
           viewAllRoles()
         break;
+
         case 'View All Employees':
           viewAll()
         break;
+
         case 'View All Employees By Department':
           viewAllByDept()
-          // .catch(function(err) {
-          //   console.error(err);
-          // });
         break;
+
         case 'View All Employees By Manager':
           viewAllByManager()
-          // .catch(function(err) {
-          //   console.error(err);
-          // });
         break;
+
         case 'Add Department':
           addDept()
         break;
+
         case 'Add Role':
           addRole()
         break;
+
         case 'Add Employee':
           addEmployee()
-          // .catch(function(err) {
-          //   console.error(err);
-          // });
         break;
+
         case 'Remove Department':
           removeDept()
         break;
+
         case 'Remove Role':
           removeRole()
         break;
+
         case 'Remove Employee':
           removeEmployee()
-          // .catch(function(err) {
-          //   console.error(err);
-          // });
         break;
+
         case 'Update Employee Role':
           updateRole()
-          // .catch(function(err) {
-          //   console.error(err);
-          // });
         break;
+
         case 'Update Employee Manager':
           updateManager()
-          // .catch(function(err) {
-          //   console.error(err);
-          // });
         break;
+
         case 'View All Roles':
           viewAllRoles()
-          // .catch(function(err) {
-          //   console.error(err);
-          // });
         break;
+
         case 'View a Department\'s Utilized Budget':
           viewBudget()
         break;
+        
         default:
           // writeFileAsync('./employee-tracker.sql', generateHTML());
           // console.log('Wrote to employee-tracker.sql');
