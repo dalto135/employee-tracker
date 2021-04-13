@@ -36,15 +36,15 @@ let managers = ['Barb Walters', 'Alex Bog'];
 let employees = [
   {
     id: Math.random(),
-    firstname: 'Dalton',
-    lastname: 'Wilkins',
+    firstName: 'Dalton',
+    lastName: 'Wilkins',
     role: roles[0],
     manager: managers[0],
   },
   {
     id: Math.random(),
-    firstname: 'Steve',
-    lastname: 'Steverson',
+    firstName: 'Steve',
+    lastName: 'Steverson',
     role: roles[1],
     manager: managers[1],
   },
@@ -142,7 +142,7 @@ function starterPrompt() {
 function viewAll() {
   let names = [];
   employees.forEach(i =>
-    names.push(i.firstname + ' ' + i.lastname)
+    names.push(i.firstName + ' ' + i.lastName)
   )
   names.forEach(i => 
     console.log(i)
@@ -156,11 +156,12 @@ function viewAll() {
     },
   ])
   .then(answers => {
-    switch(answers.return) {
-      default:
-        starterPrompt()
-      break;
-    }
+    // switch(answers.return) {
+    //   default:
+    //     starterPrompt()
+    //   break;
+    // }
+    starterPrompt()
   })
 }
 
@@ -210,6 +211,14 @@ function viewAllByManager() {
 
 //Add employees
 function addEmployee() {
+  let roleTitles = [];
+  roles.forEach(i =>
+    roleTitles.push(i.title)
+  )
+  roleTitles.forEach(i => 
+    console.log(i)
+  )
+
   return inquirer.prompt([
     {
       type: 'input',
@@ -227,7 +236,7 @@ function addEmployee() {
       type: 'list',
       name: 'role',
       message: "What is the employee's role?",
-      choices: roles,
+      choices: roleTitles,
     },
     {
       type: 'list',
@@ -237,14 +246,26 @@ function addEmployee() {
     },
   ])
   .then(answers => {
+    let getRole;
+
+    for (let i = 0; i < roles.length; i++) {
+      if (roleTitles[i] === answers.role) {
+        getRole = roles[i];
+        // console.log('getRole: ' + getRole);
+      }
+    }
+
+
     let newEmployee = {
       id: Math.random(),
       firstName: answers.firstname,
       lastName: answers.lastname,
-      role: answers.role,
+      role: getRole,
       manager: answers.manager,
     };
     employees.push(newEmployee);
+    console.log(newEmployee);
+    console.log(newEmployee.role.title);
 
     starterPrompt()
     .catch(function(err) {
@@ -255,23 +276,45 @@ function addEmployee() {
 
 //Remove employees
 function removeEmployee() {
+  let employeeNames = [];
+  employees.forEach(i =>
+    employeeNames.push(i.firstName + ' ' + i.lastName)
+  )
+
   return inquirer.prompt([
     {
-      type: 'input',
+      type: 'list',
       name: 'remove',
       message: 'Which employee do you want to remove?',
-      choices: ['hello', 'world'],
+      choices: employeeNames,
     },
   ])
+  .then(answers => {
+    let newList = [];
+    for (let i = 0; i < employees.length; i++) {
+      if (employeeNames[i] !== answers.remove) {
+        newList.push(employees[i]);
+      }
+    }
+    employees = newList;
+    console.log(employees);
+    // console.log(departments[0]);
+    // console.log(employees[0].role.department);
+
+    starterPrompt();
+  })
 }
 
 //Update role
 function updateRole() {
-  
+  let employeeNames = [];
+  employees.forEach(i =>
+    employeeNames.push(i.firstName + ' ' + i.lastName)
+  )
 
   let roleTitles = [];
-  employees.forEach(i =>
-    roleTitles.push(i.firstname + ' ' + i.lastname)
+  roles.forEach(i =>
+    roleTitles.push(i.title)
   )
   roleTitles.forEach(i => 
     console.log(i)
@@ -291,36 +334,83 @@ function updateRole() {
     },
   ])
   .then(answers => {
-    let getEmployee;
-    let employeeIds = [];
-    employees.forEach(i =>
-      employeeIds.push(i.id)
-    )
-    employeeNames.forEach(i => 
-      console.log(i)
-    )
+    // let getEmployee;
+    let getRole;
 
+    for (let i = 0; i < roles.length; i++) {
+      if (roleTitles[i] === answers.role) {
+        getRole = roles[i];
+      }
+    }
 
-  let employeeNames = [];
-  employees.forEach(i =>
-    employeeNames.push(i.firstname + ' ' + i.lastname)
-  )
-  employeeNames.forEach(i => 
-    console.log(i)
-  )
+    for (let i = 0; i < employees.length; i++) {
+      if (employeeNames[i] === answers.employee) {
+        employees[i].role = getRole;
+      }
+    }
+
+    // switch(answers.role) {
+    //   default:
+    //     console.log(employees[1].role.title);
+    //     starterPrompt()
+    //   break;
+    // }
+    starterPrompt();
   })
 }
 
 //Update manager
 function updateManager() {
+  let employeeNames = [];
+  employees.forEach(i =>
+    employeeNames.push(i.firstName + ' ' + i.lastName)
+  )
+
+  // let managerNames = [];
+  // managers.forEach(i =>
+  //   managerNames.push(i)
+  // )
+  // managerNames.forEach(i => 
+  //   console.log(i)
+  // )
   return inquirer.prompt([
     {
       type: 'list',
-      name: 'firstname',
-      message: "What is the employee's first name?",
+      name: 'employee',
+      message: "Choose an employee",
+      choices: employeeNames,
+    },
+    {
+      type: 'list',
+      name: 'manager',
+      message: "Who is the employee's new manager?",
       choices: managers,
     },
   ])
+  .then(answers => {
+    // let getEmployee;
+    let getManager;
+
+    for (let i = 0; i < managers.length; i++) {
+      if (managers[i] === answers.manager) {
+        getManager = managers[i];
+      }
+    }
+
+    for (let i = 0; i < employees.length; i++) {
+      if (employeeNames[i] === answers.employee) {
+        employees[i].manager = getManager;
+      }
+    }
+
+    switch(answers.role) {
+      default:
+        console.log(employees[0].manager);
+        starterPrompt()
+      break;
+    }
+  
+  })
 }
 
 //View all roles
