@@ -3,6 +3,48 @@ const Department = require('./develop/department');
 const Role = require('./develop/role');
 const Employee = require('./develop/employee');
 
+const inquirer = require('inquirer');
+const fs = require('fs');
+const util = require('util');
+const writeFileAsync = util.promisify(fs.writeFile);
+
+const cTable = require('console.table');
+
+const mysql = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'me',
+  password : 'biscuitbill',
+  database : 'employee_trackerdb'
+});
+ 
+connection.connect(function(err) {
+  if (err) {
+    console.error('error connecting: ' + err.stack);
+    return;
+  }
+ 
+  console.log('connected as id ' + connection.threadId);
+});
+
+console.table([
+  {
+    name: 'foo',
+    age: 10
+  }, {
+    name: 'bar',
+    age: 20
+  }
+]);
+
+ console.table()
+// connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
+//   if (error) throw error;
+//   console.log('The solution is: ', results[0].solution);
+// });
+ 
+connection.end();
+
 let marketing = new Department(Math.random(), 'Marketing');
 let finance = new Department(Math.random(), 'Finance');
 let management = new Department(Math.random(), 'Management');
@@ -17,11 +59,6 @@ let dalton = new Employee(Math.random(), 'Dalton', 'Wilkins', roles[2].id, Math.
 let barb = new Employee(Math.random(), 'Barb', 'Walters', roles[0].id, dalton.id);
 let steve = new Employee(Math.random(), 'Steve', 'Steverson', roles[1].id, dalton.id);
 let employees = [dalton, barb, steve];
-
-const inquirer = require('inquirer');
-const fs = require('fs');
-const util = require('util');
-const writeFileAsync = util.promisify(fs.writeFile);
 
 const stringValidator = async (input) => {
   const nameValid = /^[A-Za-z]+$/.test(input);
@@ -174,9 +211,20 @@ function viewAllByDept() {
     console.log(departments[i].name + ':');
 
     for (let j = 0; j < employees.length; j++) {
-      if (employees[j].role.department === departments[i].id) {
-        console.log(employees[j].firstName + ' ' + employees[j].lastName);
+      // let theRole;
+      // roles.forEach(i => {
+      //     if (i.id === employees[j].role) {
+      //         theRole = i.id;
+      //     }
+      // })
+      for (let k = 0; k < roles.length; k++) {
+        if (employees[j].role === roles[k].id && roles[k].department === departments[i].id) {
+            console.log(employees[j].firstName + ' ' + employees[j].lastName);
+        }
       }
+      
+      // if (employees[j].role.department === departments[i].id) {
+      // }
     }
     console.log();
   }
@@ -231,12 +279,57 @@ function viewAllByManager() {
 
 //Add departments
 function addDept() {
-
+  return inquirer.prompt([
+    {
+      type: 'input',
+      name: 'name',
+      message: 'What is the department\'s name?',
+      validate: stringValidator,
+    },
+  ])
+  .then(answers => {
+    let newDepartment = new Department(Math.random(), answers.name);
+    departments.push(newDepartment);
+    console.log(departments);
+    starterPrompt()
+  })
 }
 
 //Add roles
 function addRole() {
+  return inquirer.prompt([
+    {
+      type: 'input',
+      name: 'title',
+      message: 'What is the title of the role?',
+      validate: stringValidator,
+    },
+    {
+      type: 'input',
+      name: 'salary',
+      message: 'What is the salary of the role?',
+      validate: numberValidator,
+    },
+    {
+      type: 'list',
+      name: 'department',
+      message: 'What is the department of the role?',
+      choices: departments,
+    },
+  ])
+  .then(answers => {
+    let departmentId;
+    for (let i = 0; i < departments.length; i++) {
+      if (answers.department === departments[i].name) {
+        departmentId = departments[i].id
+      }
+    }
 
+    let newRole = new Role(Math.random(), answers.title, parseInt(answers.salary), departmentId);
+    roles.push(newRole);
+    console.log(roles);
+    starterPrompt()
+  })
 }
 
 //Add employees
@@ -248,6 +341,12 @@ function addEmployee() {
   // roleTitles.forEach(i => 
   //   console.log(i)
   // )
+  let managers = [];
+  employees.forEach(i => {
+      if (i.role === roles[2].id) {
+        managers.push(i.firstName + ' ' + i.lastName);
+      }
+  })
 
   return inquirer.prompt([
     {
@@ -280,7 +379,14 @@ function addEmployee() {
 
     for (let i = 0; i < roles.length; i++) {
       if (roleTitles[i] === answers.role) {
-        getRole = roles[i];
+        getRole = roles[i].id;
+      }
+    }
+
+    let chosenManager;
+    for (let j = 0; j < employees.length; j++) {
+      if (employees[j].firstName + ' ' + employees[j].lastName === answers.manager) {
+        chosenManager = employees[j].id;
       }
     }
 
@@ -292,7 +398,7 @@ function addEmployee() {
     //   manager: answers.manager,
     // };
 
-    let newEmployee = new Employee(Math.random(), answers.firstname, answers.lastname, getRole, answers.manager);
+    let newEmployee = new Employee(Math.random(), answers.firstname, answers.lastname, getRole, chosenManager);
     employees.push(newEmployee);
     console.log(newEmployee);
     starterPrompt()
@@ -301,12 +407,54 @@ function addEmployee() {
 
 //Remove departments
 function removeDept() {
-
+  let deptNames = [];
+  departments.forEach(i =>
+    deptNames.push(i.name)
+  )
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'department',
+      message: 'What is the department\'s name?',
+      choices: deptNames
+    },
+  ])
+  .then(answers => {
+    let newDepts = [];
+    departments.forEach(i => {
+      if (i.name !== answers.department) {
+        newDepts.push(i);
+      }
+    })
+    departments = newDepts;
+    starterPrompt()
+  })
 }
 
 //Remove roles
 function removeRole() {
-
+  let roleTitles = [];
+  roles.forEach(i =>
+    roleTitles.push(i.title)
+  )
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'role',
+      message: 'What is the role title?',
+      choices: roleTitles
+    },
+  ])
+  .then(answers => {
+    let newRoles = [];
+    roles.forEach(i => {
+      if (i.title !== answers.role) {
+        newRoles.push(i);
+      }
+    })
+    roles = newRoles;
+    starterPrompt()
+  })
 }
 
 //Remove employees
@@ -429,7 +577,40 @@ function updateManager() {
 
 //View utilized budget of a department
 function viewBudget() {
+  let deptNames = [];
+  departments.forEach(i =>
+    deptNames.push(i.name)
+  )
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'department',
+      message: 'What is the department\'s name?',
+      choices: deptNames
+    },
+  ])
+  .then(answers => {
+    let budget = 0;
+    let dept;
+    departments.forEach(i => {
+        if (i.name === answers.department) {
+          dept = i;
+        }
+    })
 
+    employees.forEach(i =>
+      roles.forEach(j => {
+          if (i.role === j.id) {
+            if (j.department === dept.id) {
+              budget += j.salary;
+            }
+          }
+
+      })
+    )
+    console.log('$' + budget);
+    starterPrompt()
+  })
 }
 
 const generateHTML = () =>
