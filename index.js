@@ -3,11 +3,8 @@ const Department = require('./develop/department');
 const Role = require('./develop/role');
 const Employee = require('./develop/employee');
 
+//Require statements
 const inquirer = require('inquirer');
-const fs = require('fs');
-const util = require('util');
-const writeFileAsync = util.promisify(fs.writeFile);
-
 const cTable = require('console.table');
 
 //mysql functionality
@@ -30,29 +27,23 @@ connection.connect(function(err) {
 //Clears database
 connection.query('drop table employee', function (error, results, fields) {
   if (error) throw error;
-  console.log('Employee Table Dropped');
 });
 connection.query('drop table role', function (error, results, fields) {
   if (error) throw error;
-  console.log('Role Table Dropped');
 });
 connection.query('drop table department', function (error, results, fields) {
   if (error) throw error;
-  console.log('Department Table Dropped');
 });
 
 //Creates new tables
 connection.query('create table department (id int not null, name varchar(30), primary key (id))', function (error, results, fields) {
   if (error) throw error;
-  console.log('Department Table Created');
 });
 connection.query('create table role (id int not null, title varchar(30), salary decimal, department_id int, primary key (id))', function (error, results, fields) {
   if (error) throw error;
-  console.log('Role Table Created');
 });
 connection.query('create table employee (id int not null, first_name varchar(30), last_name varchar(30), role_id int, manager_id int, primary key (id))', function (error, results, fields) {
   if (error) throw error;
-  console.log('Employee Table Created');
 });
 
 //Department, Role and Employee objects created using imported classes
@@ -82,11 +73,6 @@ connection.query(`insert into department (id, name) values (${management.id}, '$
   if (error) throw error;
 });
 
-connection.query('select * from department', function (error, results, fields) {
-  if (error) throw error;
-  console.table('Department Table: ', results);
-});
-
 //Roles added to database
 connection.query(`insert into role (id, title, salary, department_id) values (${engineer.id}, '${engineer.title}', ${engineer.salary}, ${engineer.department})`, function (error, results, fields) {
   if (error) throw error;
@@ -98,11 +84,6 @@ connection.query(`insert into role (id, title, salary, department_id) values (${
   if (error) throw error;
 });
 
-connection.query('select * from role', function (error, results, fields) {
-  if (error) throw error;
-  console.table('Role Table: ', results);
-});
-
 //Employees added to database
 connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${dalton.id}, '${dalton.firstName}', '${dalton.lastName}', ${dalton.role}, ${dalton.manager})`, function (error, results, fields) {
   if (error) throw error;
@@ -112,11 +93,6 @@ connection.query(`insert into employee (id, first_name, last_name, role_id, mana
 });
 connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${steve.id}, '${steve.firstName}', '${steve.lastName}', ${steve.role}, ${steve.manager})`, function (error, results, fields) {
   if (error) throw error;
-});
-
-connection.query('select * from employee', function (error, results, fields) {
-  if (error) throw error;
-  console.table('Employee Table: ', results);
 });
 
 //Validates user input for strings and ints
@@ -207,8 +183,7 @@ function starterPrompt() {
         break;
 
         default:
-          // writeFileAsync('./employee-tracker.sql', generateHTML());
-          // console.log('Wrote to employee-tracker.sql');
+          connection.end();
         break;
       }
   })
@@ -216,9 +191,10 @@ function starterPrompt() {
 
 //View all departments
 function viewAllDept() {
-  departments.forEach(i => 
-    console.log(i.name)
-  )
+  connection.query('select * from department', function (error, results, fields) {
+    if (error) throw error;
+    console.table('Departments:', results);
+  });
   return inquirer.prompt([
     {
       type: 'list',
@@ -233,9 +209,10 @@ function viewAllDept() {
 }
 //View all roles
 function viewAllRoles() {
-  roles.forEach(i => 
-    console.log(i.title)
-  )
+  connection.query('select * from role', function (error, results, fields) {
+    if (error) throw error;
+    console.table('Roles:', results);
+  });
   return inquirer.prompt([
     {
       type: 'list',
@@ -250,9 +227,10 @@ function viewAllRoles() {
 }
 //View all employees
 function viewAll() {
-  employees.forEach(i => 
-    console.log(i.firstName + ' ' + i.lastName)
-  )
+  connection.query('select * from employee', function (error, results, fields) {
+    if (error) throw error;
+    console.table('Employees:', results);
+  });
   return inquirer.prompt([
     {
       type: 'list',
@@ -272,20 +250,11 @@ function viewAllByDept() {
     console.log(departments[i].name + ':');
 
     for (let j = 0; j < employees.length; j++) {
-      // let theRole;
-      // roles.forEach(i => {
-      //     if (i.id === employees[j].role) {
-      //         theRole = i.id;
-      //     }
-      // })
       for (let k = 0; k < roles.length; k++) {
         if (employees[j].role === roles[k].id && roles[k].department === departments[i].id) {
             console.log(employees[j].firstName + ' ' + employees[j].lastName);
         }
       }
-      
-      // if (employees[j].role.department === departments[i].id) {
-      // }
     }
     console.log();
   }
@@ -311,7 +280,6 @@ function viewAllByManager() {
         managers.push(i);
       }
   })
-  // console.log(managers);
 
   for (let i = 0; i < managers.length; i++) {
     console.log(managers[i].firstName + ' ' + managers[i].lastName + ':');
@@ -398,9 +366,7 @@ function addEmployee() {
   roles.forEach(i =>
     roleTitles.push(i.title)
   )
-  // roleTitles.forEach(i => 
-  //   console.log(i)
-  // )
+
   let managers = [];
   employees.forEach(i => {
       if (i.role === roles[2].id) {
@@ -449,14 +415,6 @@ function addEmployee() {
         chosenManager = employees[j].id;
       }
     }
-
-    // let newEmployee = {
-    //   id: Math.random(),
-    //   firstName: answers.firstname,
-    //   lastName: answers.lastname,
-    //   role: getRole,
-    //   manager: answers.manager,
-    // };
 
     let newEmployee = new Employee(Math.random(), answers.firstname, answers.lastname, getRole, chosenManager);
     employees.push(newEmployee);
@@ -665,7 +623,6 @@ function viewBudget() {
               budget += j.salary;
             }
           }
-
       })
     )
     console.log('$' + budget);
@@ -673,55 +630,8 @@ function viewBudget() {
   })
 }
 
-const generateHTML = () =>
-`
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>My Team</title>
-        <link rel="stylesheet" href="reset.css"/>
-        <link rel="stylesheet" href="style.css"/>
-    </head>
-    <body>
-        <header>
-            <h1>My Team</h1>
-        </header>
-
-        <section id="teammanager">
-            <h2>Team Manager</h2>
-            ${managerDiv}
-            
-            
-        </section>
-
-        <section id="employees">
-            <section id="engineers">
-                <h2>Engineers</h2>
-                <section>
-                  ${engineerDiv}
-                </section>
-                
-            </section>
-    
-            <section id="interns">
-                <h2>Interns</h2>
-                <section>
-                  ${internDiv}
-                </section>
-                
-            </section>
-        </section>
-
-    </body>
-</html>
-`;
-
 function init() {
   starterPrompt()
-    .catch(function(err) {
-        console.error(err);
-    });
 };
 
 init();
-connection.end();
