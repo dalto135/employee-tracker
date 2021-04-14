@@ -1,4 +1,4 @@
-//Global variables
+//Imported classes
 const Department = require('./develop/department');
 const Role = require('./develop/role');
 const Employee = require('./develop/employee');
@@ -10,6 +10,7 @@ const writeFileAsync = util.promisify(fs.writeFile);
 
 const cTable = require('console.table');
 
+//mysql functionality
 const mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -26,30 +27,90 @@ connection.connect(function(err) {
   console.log('connected as id ' + connection.threadId);
 });
 
-connection.query('select * from employee', function (error, results, fields) {
+//Clears database
+connection.query('drop table employee', function (error, results, fields) {
   if (error) throw error;
-  console.table('Employee Table: ', results);
+  console.log('Employee Table Dropped');
 });
- 
-let marketing = new Department(Math.random(), 'Marketing');
-let finance = new Department(Math.random(), 'Finance');
-let management = new Department(Math.random(), 'Management');
+connection.query('drop table role', function (error, results, fields) {
+  if (error) throw error;
+  console.log('Role Table Dropped');
+});
+connection.query('drop table department', function (error, results, fields) {
+  if (error) throw error;
+  console.log('Department Table Dropped');
+});
+
+//Creates new tables
+connection.query('create table department (id int not null, name varchar(30), primary key (id))', function (error, results, fields) {
+  if (error) throw error;
+  console.log('Department Table Created');
+});
+connection.query('create table role (id int not null, title varchar(30), salary decimal, department_id int, primary key (id))', function (error, results, fields) {
+  if (error) throw error;
+  console.log('Role Table Created');
+});
+connection.query('create table employee (id int not null, first_name varchar(30), last_name varchar(30), role_id int, manager_id int, primary key (id))', function (error, results, fields) {
+  if (error) throw error;
+  console.log('Employee Table Created');
+});
+
+//Department, Role and Employee objects created using imported classes
+let marketing = new Department(Math.floor(Math.random() * 10000), 'Marketing');
+let finance = new Department(Math.floor(Math.random() * 10000), 'Finance');
+let management = new Department(Math.floor(Math.random() * 10000), 'Management');
 let departments = [marketing, finance, management];
-// console.table('Departments', departments);
 
-let engineer = new Role(Math.random(), 'Engineer', 75000.00, departments[0].id);
-let intern = new Role(Math.random(), 'Intern', 75000.00, departments[1].id);
-let manager = new Role(Math.random(), 'Manager', 75000.00, departments[2].id);
+let engineer = new Role(Math.floor(Math.random() * 10000), 'Engineer', 75000.00, departments[0].id);
+let intern = new Role(Math.floor(Math.random() * 10000), 'Intern', 75000.00, departments[1].id);
+let manager = new Role(Math.floor(Math.random() * 10000), 'Manager', 75000.00, departments[2].id);
 let roles = [engineer, intern, manager];
-// console.table('Roles', roles);
 
-let dalton = new Employee(Math.random(), 'Dalton', 'Wilkins', roles[2].id, Math.random());
-let barb = new Employee(Math.random(), 'Barb', 'Walters', roles[0].id, dalton.id);
-let steve = new Employee(Math.random(), 'Steve', 'Steverson', roles[1].id, dalton.id);
+let dalton = new Employee(Math.floor(Math.random() * 10000), 'Dalton', 'Wilkins', roles[2].id, Math.floor(Math.random() * 10000));
+let barb = new Employee(Math.floor(Math.random() * 10000), 'Barb', 'Walters', roles[0].id, dalton.id);
+let steve = new Employee(Math.floor(Math.random() * 10000), 'Steve', 'Steverson', roles[1].id, dalton.id);
 let employees = [dalton, barb, steve];
-// console.table('Employees', employees);
 
-connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (345, '${barb.firstName}', '${barb.lastName}', 355, 345)`, function (error, results, fields) {
+//Departments added to database
+connection.query(`insert into department (id, name) values (${marketing.id}, '${marketing.name}')`, function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query(`insert into department (id, name) values (${finance.id}, '${finance.name}')`, function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query(`insert into department (id, name) values (${management.id}, '${management.name}')`, function (error, results, fields) {
+  if (error) throw error;
+});
+
+connection.query('select * from department', function (error, results, fields) {
+  if (error) throw error;
+  console.table('Department Table: ', results);
+});
+
+//Roles added to database
+connection.query(`insert into role (id, title, salary, department_id) values (${engineer.id}, '${engineer.title}', ${engineer.salary}, ${engineer.department})`, function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query(`insert into role (id, title, salary, department_id) values (${intern.id}, '${intern.title}', ${intern.salary}, ${intern.department})`, function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query(`insert into role (id, title, salary, department_id) values (${manager.id}, '${manager.title}', ${manager.salary}, ${manager.department})`, function (error, results, fields) {
+  if (error) throw error;
+});
+
+connection.query('select * from role', function (error, results, fields) {
+  if (error) throw error;
+  console.table('Role Table: ', results);
+});
+
+//Employees added to database
+connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${dalton.id}, '${dalton.firstName}', '${dalton.lastName}', ${dalton.role}, ${dalton.manager})`, function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${barb.id}, '${barb.firstName}', '${barb.lastName}', ${barb.role}, ${barb.manager})`, function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${steve.id}, '${steve.firstName}', '${steve.lastName}', ${steve.role}, ${steve.manager})`, function (error, results, fields) {
   if (error) throw error;
 });
 
@@ -58,17 +119,7 @@ connection.query('select * from employee', function (error, results, fields) {
   console.table('Employee Table: ', results);
 });
 
-connection.query(`DELETE FROM employee WHERE first_name = '${barb.firstName}'`, function (error, results, fields) {
-  if (error) throw error;
-});
-
-connection.query('select * from employee', function (error, results, fields) {
-  if (error) throw error;
-  console.table('Employee Table: ', results);
-});
-
-
-
+//Validates user input for strings and ints
 const stringValidator = async (input) => {
   const nameValid = /^[A-Za-z]+$/.test(input);
   if (!nameValid) {
@@ -84,6 +135,7 @@ const numberValidator = async (input) => {
   return true;
 };
 
+//Prompts
 function starterPrompt() {
   return inquirer.prompt([
     {
