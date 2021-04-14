@@ -10,55 +10,64 @@ const writeFileAsync = util.promisify(fs.writeFile);
 
 const cTable = require('console.table');
 
-// const mysql = require('mysql');
-// var connection = mysql.createConnection({
-//   host     : 'localhost:3306',
-//   user     : 'me',
-//   password : 'biscuitbill',
-//   database : 'employee_trackerdb'
-// });
+const mysql = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'biscuitbill',
+  database : 'employee_trackerdb'
+});
  
-// connection.connect(function(err) {
-//   if (err) {
-//     console.error('error connecting: ' + err.stack);
-//     return;
-//   }
- 
-//   console.log('connected as id ' + connection.threadId);
-// });
-
-console.table([
-  {
-    name: 'foo',
-    age: 10
-  }, {
-    name: 'bar',
-    age: 20
+connection.connect(function(err) {
+  if (err) {
+    console.error('error connecting: ' + err.stack);
+    return;
   }
-]);
+  console.log('connected as id ' + connection.threadId);
+});
 
-//  console.table()
-// connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
-//   if (error) throw error;
-//   console.log('The solution is: ', results[0].solution);
-// });
+connection.query('select * from employee', function (error, results, fields) {
+  if (error) throw error;
+  console.table('Employee Table: ', results);
+});
  
-// connection.end();
-
 let marketing = new Department(Math.random(), 'Marketing');
 let finance = new Department(Math.random(), 'Finance');
 let management = new Department(Math.random(), 'Management');
 let departments = [marketing, finance, management];
+// console.table('Departments', departments);
 
 let engineer = new Role(Math.random(), 'Engineer', 75000.00, departments[0].id);
 let intern = new Role(Math.random(), 'Intern', 75000.00, departments[1].id);
 let manager = new Role(Math.random(), 'Manager', 75000.00, departments[2].id);
 let roles = [engineer, intern, manager];
+// console.table('Roles', roles);
 
 let dalton = new Employee(Math.random(), 'Dalton', 'Wilkins', roles[2].id, Math.random());
 let barb = new Employee(Math.random(), 'Barb', 'Walters', roles[0].id, dalton.id);
 let steve = new Employee(Math.random(), 'Steve', 'Steverson', roles[1].id, dalton.id);
 let employees = [dalton, barb, steve];
+// console.table('Employees', employees);
+
+connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (345, '${barb.firstName}', '${barb.lastName}', 355, 345)`, function (error, results, fields) {
+  if (error) throw error;
+});
+
+connection.query('select * from employee', function (error, results, fields) {
+  if (error) throw error;
+  console.table('Employee Table: ', results);
+});
+
+connection.query(`DELETE FROM employee WHERE first_name = '${barb.firstName}'`, function (error, results, fields) {
+  if (error) throw error;
+});
+
+connection.query('select * from employee', function (error, results, fields) {
+  if (error) throw error;
+  console.table('Employee Table: ', results);
+});
+
+
 
 const stringValidator = async (input) => {
   const nameValid = /^[A-Za-z]+$/.test(input);
@@ -663,3 +672,4 @@ function init() {
 };
 
 init();
+connection.end();
