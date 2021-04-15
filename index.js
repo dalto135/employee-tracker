@@ -74,24 +74,24 @@ connection.query(`insert into department (id, name) values (${management.id}, '$
 });
 
 //Roles added to database
-connection.query(`insert into role (id, title, salary, department_id) values (${engineer.id}, '${engineer.title}', ${engineer.salary}, ${engineer.department})`, function (error, results, fields) {
+connection.query(`insert into role (id, title, salary, department_id) values (${engineer.id}, '${engineer.title}', ${engineer.salary}, ${engineer.department_id})`, function (error, results, fields) {
   if (error) throw error;
 });
-connection.query(`insert into role (id, title, salary, department_id) values (${intern.id}, '${intern.title}', ${intern.salary}, ${intern.department})`, function (error, results, fields) {
+connection.query(`insert into role (id, title, salary, department_id) values (${intern.id}, '${intern.title}', ${intern.salary}, ${intern.department_id})`, function (error, results, fields) {
   if (error) throw error;
 });
-connection.query(`insert into role (id, title, salary, department_id) values (${manager.id}, '${manager.title}', ${manager.salary}, ${manager.department})`, function (error, results, fields) {
+connection.query(`insert into role (id, title, salary, department_id) values (${manager.id}, '${manager.title}', ${manager.salary}, ${manager.department_id})`, function (error, results, fields) {
   if (error) throw error;
 });
 
 //Employees added to database
-connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${dalton.id}, '${dalton.firstName}', '${dalton.lastName}', ${dalton.role}, ${dalton.manager})`, function (error, results, fields) {
+connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${dalton.id}, '${dalton.first_name}', '${dalton.last_name}', ${dalton.role_id}, ${dalton.manager_id})`, function (error, results, fields) {
   if (error) throw error;
 });
-connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${barb.id}, '${barb.firstName}', '${barb.lastName}', ${barb.role}, ${barb.manager})`, function (error, results, fields) {
+connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${barb.id}, '${barb.first_name}', '${barb.last_name}', ${barb.role_id}, ${barb.manager_id})`, function (error, results, fields) {
   if (error) throw error;
 });
-connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${steve.id}, '${steve.firstName}', '${steve.lastName}', ${steve.role}, ${steve.manager})`, function (error, results, fields) {
+connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${steve.id}, '${steve.first_name}', '${steve.last_name}', ${steve.role_id}, ${steve.manager_id})`, function (error, results, fields) {
   if (error) throw error;
 });
 
@@ -209,10 +209,16 @@ function viewAllDept() {
 }
 //View all roles
 function viewAllRoles() {
-  connection.query('select * from role', function (error, results, fields) {
+  
+  // connection.query('select * from role', function (error, results, fields) {
+  //   if (error) throw error;
+  //   console.table('Roles:', results);
+  // });
+  connection.query("SELECT role.id AS id, role.title AS title, role.salary AS salary, department.name AS department FROM role JOIN department ON role.department_id = department.id", function (error, results, fields) {
     if (error) throw error;
     console.table('Roles:', results);
   });
+
   return inquirer.prompt([
     {
       type: 'list',
@@ -227,10 +233,17 @@ function viewAllRoles() {
 }
 //View all employees
 function viewAll() {
-  connection.query('select * from employee', function (error, results, fields) {
+
+  // connection.query('select * from employee', function (error, results, fields) {
+  //   if (error) throw error;
+  //   console.table('Employees:', results);
+  // });
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS role FROM employee JOIN role ON employee.role_id = role.id", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees:', results);
+    // console.log(results);
   });
+
   return inquirer.prompt([
     {
       type: 'list',
@@ -369,21 +382,21 @@ function addEmployee() {
 
   let managers = [];
   employees.forEach(i => {
-      if (i.role === roles[2].id) {
-        managers.push(i.firstName + ' ' + i.lastName);
+      if (i.role_id === roles[2].id) {
+        managers.push(i.first_name + ' ' + i.last_name);
       }
   })
 
   return inquirer.prompt([
     {
       type: 'input',
-      name: 'firstname',
+      name: 'first_name',
       message: 'What is the employee\'s first name?',
       validate: stringValidator,
     },
     {
       type: 'input',
-      name: 'lastname',
+      name: 'last_name',
       message: 'What is the employee\'s last name?',
       validate: stringValidator,
     },
@@ -411,14 +424,20 @@ function addEmployee() {
 
     let chosenManager;
     for (let j = 0; j < employees.length; j++) {
-      if (employees[j].firstName + ' ' + employees[j].lastName === answers.manager) {
+      if (employees[j].first_name + ' ' + employees[j].last_name === answers.manager) {
         chosenManager = employees[j].id;
       }
     }
 
-    let newEmployee = new Employee(Math.random(), answers.firstname, answers.lastname, getRole, chosenManager);
-    employees.push(newEmployee);
+    let newEmployee = new Employee(Math.floor(Math.random() * 10000), answers.first_name, answers.last_name, getRole, chosenManager);
     console.log(newEmployee);
+
+    connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${newEmployee.id}, '${newEmployee.first_name}', '${newEmployee.last_name}', ${newEmployee.role_id}, ${newEmployee.manager_id})`, function (error, results, fields) {
+      if (error) throw error;
+    });
+
+    // employees.push(newEmployee);
+    // console.log(newEmployee);
     starterPrompt()
   })
 }

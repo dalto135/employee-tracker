@@ -1,10 +1,10 @@
 class Employee {
-    constructor(id, firstName, lastName, role, manager) {
+    constructor(id, first_name, last_name, role_id, manager_id) {
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.role = role;
-        this.manager = manager;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.role_id = role_id;
+        this.manager_id = manager_id;
     }
 
 
@@ -12,13 +12,13 @@ class Employee {
         return this.id;
     }
     getName() {
-        return this.firstName + ' ' + this.lastName;
+        return this.first_name + ' ' + this.last_name;
     }
     getRole() {
-        return this.role;
+        return this.role_id;
     }
     getManager() {
-        return this.manager;
+        return this.manager_id;
     }
 }
 
