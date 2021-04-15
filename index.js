@@ -238,10 +238,9 @@ function viewAll() {
   //   if (error) throw error;
   //   console.table('Employees:', results);
   // });
-  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS role FROM employee JOIN role ON employee.role_id = role.id", function (error, results, fields) {
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS role, department.name AS department, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees:', results);
-    // console.log(results);
   });
 
   return inquirer.prompt([
@@ -259,18 +258,22 @@ function viewAll() {
 
 //View all employees by department
 function viewAllByDept() {
-  for (let i = 0; i < departments.length; i++) {
-    console.log(departments[i].name + ':');
+  // for (let i = 0; i < departments.length; i++) {
+  //   console.log(departments[i].name + ':');
 
-    for (let j = 0; j < employees.length; j++) {
-      for (let k = 0; k < roles.length; k++) {
-        if (employees[j].role === roles[k].id && roles[k].department === departments[i].id) {
-            console.log(employees[j].firstName + ' ' + employees[j].lastName);
-        }
-      }
-    }
-    console.log();
-  }
+  //   for (let j = 0; j < employees.length; j++) {
+  //     for (let k = 0; k < roles.length; k++) {
+  //       if (employees[j].role === roles[k].id && roles[k].department === departments[i].id) {
+  //           console.log(employees[j].firstName + ' ' + employees[j].lastName);
+  //       }
+  //     }
+  //   }
+  //   console.log();
+  // }
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS role, department.name AS department, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY department.name ASC", function (error, results, fields) {
+    if (error) throw error;
+    console.table('Employees:', results);
+  });
 
   return inquirer.prompt([
     {
@@ -287,23 +290,27 @@ function viewAllByDept() {
 
 //View all employees by manager
 function viewAllByManager() {
-  let managers = [];
-  employees.forEach(i => {
-      if (i.role === roles[2].id) {
-        managers.push(i);
-      }
-  })
+  // let managers = [];
+  // employees.forEach(i => {
+  //     if (i.role === roles[2].id) {
+  //       managers.push(i);
+  //     }
+  // })
 
-  for (let i = 0; i < managers.length; i++) {
-    console.log(managers[i].firstName + ' ' + managers[i].lastName + ':');
+  // for (let i = 0; i < managers.length; i++) {
+  //   console.log(managers[i].firstName + ' ' + managers[i].lastName + ':');
 
-    for (let j = 0; j < employees.length; j++) {
-      if (employees[j].manager === managers[i].id) {
-        console.log(employees[j].firstName + ' ' + employees[j].lastName);
-      }
-    }
-    console.log();
-  }
+  //   for (let j = 0; j < employees.length; j++) {
+  //     if (employees[j].manager === managers[i].id) {
+  //       console.log(employees[j].firstName + ' ' + employees[j].lastName);
+  //     }
+  //   }
+  //   console.log();
+  // }
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS role, department.name AS department, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY employee.manager_id ASC", function (error, results, fields) {
+    if (error) throw error;
+    console.table('Employees:', results);
+  });
 
   return inquirer.prompt([
     {
@@ -329,9 +336,13 @@ function addDept() {
     },
   ])
   .then(answers => {
-    let newDepartment = new Department(Math.random(), answers.name);
+    let newDepartment = new Department(Math.floor(Math.random() * 10000), answers.name);
+
+    connection.query(`insert into department (id, name) values (${newDepartment.id}, '${newDepartment.name}')`, function (error, results, fields) {
+      if (error) throw error;
+    });
     departments.push(newDepartment);
-    console.log(departments);
+    // console.log(departments);
     starterPrompt()
   })
 }
@@ -366,9 +377,13 @@ function addRole() {
       }
     }
 
-    let newRole = new Role(Math.random(), answers.title, parseInt(answers.salary), departmentId);
+    let newRole = new Role(Math.floor(Math.random() * 10000), answers.title, parseInt(answers.salary), departmentId);
+
+    connection.query(`insert into role (id, title, salary, department_id) values (${newRole.id}, '${newRole.title}', ${newRole.salary}, ${newRole.department_id})`, function (error, results, fields) {
+      if (error) throw error;
+    });
     roles.push(newRole);
-    console.log(roles);
+    // console.log(roles);
     starterPrompt()
   })
 }
@@ -436,7 +451,7 @@ function addEmployee() {
       if (error) throw error;
     });
 
-    // employees.push(newEmployee);
+    employees.push(newEmployee);
     // console.log(newEmployee);
     starterPrompt()
   })
@@ -464,6 +479,11 @@ function removeDept() {
       }
     })
     departments = newDepts;
+
+    connection.query(`delete from department where name = '${answers.department}'`, function (error, results, fields) {
+      if (error) throw error;
+    });
+
     starterPrompt()
   })
 }
@@ -490,6 +510,11 @@ function removeRole() {
       }
     })
     roles = newRoles;
+
+    connection.query(`delete from role where title = '${answers.role}'`, function (error, results, fields) {
+      if (error) throw error;
+    });
+
     starterPrompt()
   })
 }
@@ -499,7 +524,7 @@ function removeEmployee() {
   let employeeNames = [];
 
   employees.forEach(i =>
-    employeeNames.push(i.firstName + ' ' + i.lastName)
+    employeeNames.push(i.first_name + ' ' + i.last_name)
   )
 
   return inquirer.prompt([
@@ -511,13 +536,20 @@ function removeEmployee() {
     },
   ])
   .then(answers => {
+    let deletedEmployee;
     let newList = [];
     for (let i = 0; i < employees.length; i++) {
       if (employeeNames[i] !== answers.remove) {
         newList.push(employees[i]);
+      } else {
+        deletedEmployee = employees[i];
       }
     }
     employees = newList;
+
+    connection.query(`delete from employee where id = '${deletedEmployee.id}'`, function (error, results, fields) {
+      if (error) throw error;
+    });
 
     starterPrompt();
   })
@@ -561,12 +593,17 @@ function updateRole() {
         getRole = roles[i];
       }
     }
-
+    let chosenEmployee;
     for (let i = 0; i < employees.length; i++) {
       if (employeeNames[i] === answers.employee) {
         employees[i].role = getRole;
+        chosenEmployee = employees[i];
       }
     }
+
+    connection.query(`update employee set role_id = ${getRole.id} where employee.id = ${chosenEmployee.id}`, function (error, results, fields) {
+      if (error) throw error;
+    });
 
     starterPrompt();
   })
