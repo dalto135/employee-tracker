@@ -1,7 +1,7 @@
 //Imported classes
-const Department = require('./develop/department');
-const Role = require('./develop/role');
-const Employee = require('./develop/employee');
+const Department = require('./assets/department');
+const Role = require('./assets/role');
+const Employee = require('./assets/employee');
 
 //Require statements
 const inquirer = require('inquirer');
