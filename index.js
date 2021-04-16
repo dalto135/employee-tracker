@@ -349,6 +349,12 @@ function addDept() {
 
 //Add roles
 function addRole() {
+
+  connection.query('select * from department', function (error, results, fields) {
+    if (error) throw error;
+    // console.table('Departments:', results);
+  // });
+
   return inquirer.prompt([
     {
       type: 'input',
@@ -366,7 +372,7 @@ function addRole() {
       type: 'list',
       name: 'department',
       message: 'What is the department of the role?',
-      choices: departments,
+      choices: results,
     },
   ])
   .then(answers => {
@@ -376,6 +382,12 @@ function addRole() {
         departmentId = departments[i].id
       }
     }
+    connection.query(`select id from department where department.name = '${answers.department}'`, function (error, results, fields) {
+      if (error) throw error;
+      departmentId = results[0].id;
+      // console.log('results id: ' + results[0].id);
+      console.log(results);
+    });
 
     let newRole = new Role(Math.floor(Math.random() * 10000), answers.title, parseInt(answers.salary), departmentId);
 
@@ -386,21 +398,43 @@ function addRole() {
     // console.log(roles);
     starterPrompt()
   })
+});
 }
 
 //Add employees
 function addEmployee() {
   let roleTitles = [];
-  roles.forEach(i =>
-    roleTitles.push(i.title)
-  )
+  // roles.forEach(i =>
+  //   roleTitles.push(i.title)
+  // )
+  connection.query('select title from role', function (error, results, fields) {
+    if (error) throw error;
+    for (let i = 0; i < results.length; i++) {
+      console.log(results[i].title);
+      roleTitles.push(results[i].title);
+    }
+  
 
   let managers = [];
-  employees.forEach(i => {
-      if (i.role_id === roles[2].id) {
-        managers.push(i.first_name + ' ' + i.last_name);
+  // employees.forEach(i => {
+  //     if (i.role_id === roles[2].id) {
+  //       managers.push(i.first_name + ' ' + i.last_name);
+  //     }
+  // })
+  let roleId = [];
+  connection.query(`select * from role where title = 'Manager'`, function (error, results, fields) {
+    if (error) throw error;
+    for (let i = 0; i < results.length; i++) {
+      roleId.push(results[i].id);
+    }
+
+    connection.query(`select * from employee where role_id = ${roleId[0]}`, function (error, results, fields) {
+      if (error) throw error;
+      for (let i = 0; i < results.length; i++) {
+        managers.push(results[i].first_name + ' ' + results[i].last_name);
+        console.log(managers);
       }
-  })
+   
 
   return inquirer.prompt([
     {
@@ -431,18 +465,46 @@ function addEmployee() {
   .then(answers => {
     let getRole;
 
-    for (let i = 0; i < roles.length; i++) {
-      if (roleTitles[i] === answers.role) {
-        getRole = roles[i].id;
-      }
-    }
+    // for (let i = 0; i < roles.length; i++) {
+    //   if (roleTitles[i] === answers.role) {
+    //     getRole = roles[i].id;
+    //   }
+    // }
+    connection.query(`select id from role where title = '${answers.role}'`, function (error, results, fields) {
+      if (error) throw error;
+      getRole = results[0].id;
+    
 
     let chosenManager;
-    for (let j = 0; j < employees.length; j++) {
-      if (employees[j].first_name + ' ' + employees[j].last_name === answers.manager) {
-        chosenManager = employees[j].id;
+    // for (let j = 0; j < employees.length; j++) {
+    //   if (employees[j].first_name + ' ' + employees[j].last_name === answers.manager) {
+    //     chosenManager = employees[j].id;
+    //   }
+    // }
+    // let managers = [];
+  // employees.forEach(i => {
+  //     if (i.role_id === roles[2].id) {
+  //       managers.push(i.first_name + ' ' + i.last_name);
+  //     }
+  // })
+  // let roleId = [];
+  // connection.query(`select * from role where title = 'Manager'`, function (error, results, fields) {
+  //   if (error) throw error;
+  //   for (let i = 0; i < results.length; i++) {
+  //     roleId.push(results[i].id);
+  //   }
+
+    connection.query(`select * from employee where role_id = ${roleId[0]}`, function (error, results, fields) {
+      if (error) throw error;
+      for (let i = 0; i < results.length; i++) {
+        // managers.push(results[i].first_name + ' ' + results[i].last_name);
+        // console.log(managers);
+        if (managers[i] === answers.manager) {
+          chosenManager = results[i].id;
+        }
       }
-    }
+    
+    
 
     let newEmployee = new Employee(Math.floor(Math.random() * 10000), answers.first_name, answers.last_name, getRole, chosenManager);
     console.log(newEmployee);
@@ -455,6 +517,12 @@ function addEmployee() {
     // console.log(newEmployee);
     starterPrompt()
   })
+  });
+});
+});
+});
+});
+// });
 }
 
 //Remove departments
@@ -559,17 +627,27 @@ function removeEmployee() {
 function updateRole() {
   let employeeNames = [];
 
-  employees.forEach(i =>
-    employeeNames.push(i.firstName + ' ' + i.lastName)
-  )
+  connection.query('select * from employee', function (error, results, fields) {
+    if (error) throw error;
+    for (let i = 0; i < results.length; i++) {
+      console.log(results[i]);
+      employeeNames.push(results[i].first_name + ' ' + results[i].last_name)
+    }
 
-  let roleTitles = [];
-  roles.forEach(i =>
-    roleTitles.push(i.title)
-  )
-  roleTitles.forEach(i => 
-    console.log(i)
-  )
+    for (let i = 0; i < employeeNames.length; i++) {
+      console.log(employeeNames[i]);
+    }
+
+    let roleTitles = [];
+    connection.query('select * from role', function (error, results, fields) {
+    if (error) throw error;
+    
+    for (let i = 0; i < results.length; i++) {
+      roleTitles.push(results[i].title);
+    }
+
+
+    });
 
   return inquirer.prompt([
     {
@@ -588,25 +666,35 @@ function updateRole() {
   .then(answers => {
     let getRole;
 
-    for (let i = 0; i < roles.length; i++) {
-      if (roleTitles[i] === answers.role) {
-        getRole = roles[i];
-      }
-    }
-    let chosenEmployee;
-    for (let i = 0; i < employees.length; i++) {
-      if (employeeNames[i] === answers.employee) {
-        employees[i].role = getRole;
-        chosenEmployee = employees[i];
-      }
-    }
-
-    connection.query(`update employee set role_id = ${getRole.id} where employee.id = ${chosenEmployee.id}`, function (error, results, fields) {
+    connection.query('select * from role', function (error, results, fields) {
       if (error) throw error;
+      
+      for (let i = 0; i < results.length; i++) {
+        if (answers.role === results[i].title) {
+          getRole = results[i];
+        }
+      }
+
+      let chosenEmployee;
+      connection.query('select * from employee', function (error, results, fields) {
+        if (error) throw error;
+        for (let i = 0; i < results.length; i++) {
+          if (employeeNames[i] === answers.employee) {
+            chosenEmployee = results[i];
+          }
+        }
+
+        connection.query(`update employee set role_id = ${getRole.id} where employee.id = ${chosenEmployee.id}`, function (error, results, fields) {
+          if (error) throw error;
+          console.log('ye');
+        });
+      });
     });
 
     starterPrompt();
   })
+  });
+
 }
 
 //Update manager
