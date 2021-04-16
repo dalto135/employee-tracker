@@ -58,6 +58,8 @@ let manager = new Role(Math.floor(Math.random() * 10000), 'Manager', 75000.00, d
 let roles = [engineer, intern, manager];
 
 let dalton = new Employee(Math.floor(Math.random() * 10000), 'Dalton', 'Wilkins', roles[2].id, Math.floor(Math.random() * 10000));
+let dalton2 = new Employee(Math.floor(Math.random() * 10000), 'Dalton2', 'Wilkins2', roles[2].id, Math.floor(Math.random() * 10000));
+
 let barb = new Employee(Math.floor(Math.random() * 10000), 'Barb', 'Walters', roles[0].id, dalton.id);
 let steve = new Employee(Math.floor(Math.random() * 10000), 'Steve', 'Steverson', roles[1].id, dalton.id);
 let employees = [dalton, barb, steve];
@@ -92,6 +94,10 @@ connection.query(`insert into employee (id, first_name, last_name, role_id, mana
   if (error) throw error;
 });
 connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${steve.id}, '${steve.first_name}', '${steve.last_name}', ${steve.role_id}, ${steve.manager_id})`, function (error, results, fields) {
+  if (error) throw error;
+});
+
+connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${dalton2.id}, '${dalton2.first_name}', '${dalton2.last_name}', ${dalton2.role_id}, ${dalton2.manager_id})`, function (error, results, fields) {
   if (error) throw error;
 });
 
@@ -387,7 +393,7 @@ function addRole() {
       departmentId = results[0].id;
       // console.log('results id: ' + results[0].id);
       console.log(results);
-    });
+   
 
     let newRole = new Role(Math.floor(Math.random() * 10000), answers.title, parseInt(answers.salary), departmentId);
 
@@ -398,6 +404,7 @@ function addRole() {
     // console.log(roles);
     starterPrompt()
   })
+});
 });
 }
 
@@ -416,12 +423,8 @@ function addEmployee() {
   
 
   let managers = [];
-  // employees.forEach(i => {
-  //     if (i.role_id === roles[2].id) {
-  //       managers.push(i.first_name + ' ' + i.last_name);
-  //     }
-  // })
   let roleId = [];
+  
   connection.query(`select * from role where title = 'Manager'`, function (error, results, fields) {
     if (error) throw error;
     for (let i = 0; i < results.length; i++) {
@@ -725,9 +728,32 @@ function updateRole() {
 //Update manager
 function updateManager() {
   let employeeNames = [];
-  employees.forEach(i =>
-    employeeNames.push(i.firstName + ' ' + i.lastName)
-  )
+  // employees.forEach(i =>
+  //   employeeNames.push(i.firstName + ' ' + i.lastName)
+  // )
+  connection.query('select * from employee', function (error, results, fields) {
+    if (error) throw error;
+    for (let i = 0; i < results.length; i++) {
+      employeeNames.push(results[i].first_name + ' ' + results[i].last_name)
+    }
+
+    let managers = [];
+    let roleId = [];
+    
+    connection.query(`select * from role where title = 'Manager'`, function (error, results, fields) {
+      if (error) throw error;
+      for (let i = 0; i < results.length; i++) {
+        roleId.push(results[i].id);
+      }
+      console.log('roleId: ' + roleId);
+  
+      connection.query(`select * from employee where role_id = ${roleId[0]}`, function (error, results, fields) {
+        if (error) throw error;
+        for (let i = 0; i < results.length; i++) {
+          managers.push(results[i].first_name + ' ' + results[i].last_name);
+          
+        }
+        console.log('managers: ' + managers);
 
   return inquirer.prompt([
     {
@@ -744,60 +770,135 @@ function updateManager() {
     },
   ])
   .then(answers => {
-    let getManager;
+    // let getManager;
 
-    for (let i = 0; i < managers.length; i++) {
-      if (managers[i] === answers.manager) {
-        getManager = managers[i];
-      }
-    }
+    // for (let i = 0; i < managers.length; i++) {
+    //   if (managers[i] === answers.manager) {
+    //     getManager = managers[i];
+    //   }
+    // }
 
-    for (let i = 0; i < employees.length; i++) {
-      if (employeeNames[i] === answers.employee) {
-        employees[i].manager = getManager;
+    // for (let i = 0; i < employees.length; i++) {
+    //   if (employeeNames[i] === answers.employee) {
+    //     employees[i].manager = getManager;
+    //   }
+    // }
+    let chosenEmployee;
+    let chosenManager;
+    connection.query('select * from employee', function (error, results, fields) {
+      if (error) throw error;
+      for (let i = 0; i < results.length; i++) {
+        if (employeeNames[i] === answers.employee) {
+          chosenEmployee = results[i];
+        }
       }
-    }
+      connection.query(`select * from employee where role_id = ${roleId[0]}`, function (error, results, fields) {
+        if (error) throw error;
+        for (let i = 0; i < results.length; i++) {
+          if (managers[i] === answers.manager) {
+            chosenManager = results[i];
+          }
+        }
+
+        connection.query(`update employee set manager_id = ${chosenManager.id} where employee.id = ${chosenEmployee.id}`, function (error, results, fields) {
+          if (error) throw error;
+
 
     starterPrompt();
   })
+  });
+});
+  });
+});
+});
+});
 }
 
 //View utilized budget of a department
 function viewBudget() {
-  let deptNames = [];
-  departments.forEach(i =>
-    deptNames.push(i.name)
-  )
+  connection.query(`select * from department`, function (error, results, fields) {
+    if (error) throw error;
+    // let deptIds = [];
+    // for (let i = 0; i < results.length; i++) {
+    //   deptIds.push(results[i].id);
+    // }
+
+  // let deptNames = [];
+  // departments.forEach(i =>
+  //   deptNames.push(i.name)
+  // )
   return inquirer.prompt([
     {
       type: 'list',
       name: 'department',
       message: 'What is the department\'s name?',
-      choices: deptNames
+      choices: results
     },
   ])
   .then(answers => {
-    let budget = 0;
-    let dept;
-    departments.forEach(i => {
-        if (i.name === answers.department) {
-          dept = i;
-        }
-    })
 
-    employees.forEach(i =>
-      roles.forEach(j => {
-          if (i.role === j.id) {
-            if (j.department === dept.id) {
-              budget += j.salary;
+
+    connection.query(`select id from department where name = '${answers.department}'`, function (error, results, fields) {
+      if (error) throw error;
+      let deptId = results[0].id;
+      // console.log('Department ID: ' + deptId);
+
+      connection.query(`select * from role where department_id = ${deptId}`, function (error, results, fields) {
+        if (error) throw error;
+        let deptRoles = results;
+        // console.log('Role IDs:', deptRoles);
+
+        let totalBudget = 0;
+        // deptRoles.forEach(i => {
+        //   connection.query(`select * from employee where role_id = ${i.id}`, function (error, results, fields) {
+        //     if (error) throw error;
+        //     results.forEach(i => 
+        //         totalBudget += i.salary,
+        //         console.log('Total Budget: $' + totalBudget)
+        //     )
+        //   });
+        // })
+        connection.query(`select * from employee`, function (error, results, fields) {
+          if (error) throw error;
+          for (let i = 0; i < results.length; i++) {
+            for (let j = 0; j < deptRoles.length; j++) {
+              if (results[i].role_id === deptRoles[j].id) {
+                totalBudget += deptRoles[j].salary;
+              }
             }
           }
-      })
-    )
-    console.log('$' + budget);
+          console.log('Total Budget: $' + totalBudget);
+        // connection.query(`select * from employee where first_name = '${employee[0].first_name}'`, function (error, results, fields) {
+        //   if (error) throw error;
+        //   console.log(results)
+
+    // let budget = 0;
+    // let dept;
+    // departments.forEach(i => {
+    //     if (i.name === answers.department) {
+    //       dept = i;
+    //     }
+    // })
+
+    // employees.forEach(i =>
+    //   roles.forEach(j => {
+    //       if (i.role === j.id) {
+    //         if (j.department === dept.id) {
+    //           budget += j.salary;
+    //         }
+    //       }
+    //   })
+    // )
+    // console.log('$' + budget);
     starterPrompt()
   })
+});
+// });
+});
+});
+  });
 }
+
 
 function init() {
   starterPrompt()
