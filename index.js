@@ -347,7 +347,7 @@ function addDept() {
     connection.query(`insert into department (id, name) values (${newDepartment.id}, '${newDepartment.name}')`, function (error, results, fields) {
       if (error) throw error;
     });
-    departments.push(newDepartment);
+    // departments.push(newDepartment);
     // console.log(departments);
     starterPrompt()
   })
@@ -400,7 +400,7 @@ function addRole() {
     connection.query(`insert into role (id, title, salary, department_id) values (${newRole.id}, '${newRole.title}', ${newRole.salary}, ${newRole.department_id})`, function (error, results, fields) {
       if (error) throw error;
     });
-    roles.push(newRole);
+    // roles.push(newRole);
     // console.log(roles);
     starterPrompt()
   })
@@ -516,7 +516,7 @@ function addEmployee() {
       if (error) throw error;
     });
 
-    employees.push(newEmployee);
+    // employees.push(newEmployee);
     // console.log(newEmployee);
     starterPrompt()
   })
@@ -534,16 +534,20 @@ function removeDept() {
   // departments.forEach(i =>
   //   deptNames.push(i.name)
   // )
-  connection.query(`select name from department`, function (error, results, fields) {
+  connection.query(`select * from department`, function (error, results, fields) {
     if (error) throw error;
-    console.log(results)
-  
+    // console.log(results)
+    let deptNames = [];
+    for (let i = 0; i < results.length; i++) {
+      deptNames.push(results[i].name);
+    }
+    
   return inquirer.prompt([
     {
       type: 'list',
       name: 'department',
       message: 'What is the department\'s name?',
-      choices: results
+      choices: deptNames
     },
   ])
   .then(answers => {
@@ -554,14 +558,24 @@ function removeDept() {
     //   }
     // })
     // departments = newDepts;
+    let deptId;
+    connection.query(`select * from department`, function (error, results, fields) {
+      if (error) throw error;
+      for (let i = 0; i < results.length; i++) {
+        if (deptNames[i] === answers.department) {
+          deptId = results[i].id;
+        }
+      }
 
-    connection.query(`delete from department where name = '${answers.department}'`, function (error, results, fields) {
+
+    connection.query(`delete from department where id = ${deptId}`, function (error, results, fields) {
       if (error) throw error;
     });
 
     starterPrompt()
   })
   });
+});
 }
 
 //Remove roles
@@ -591,14 +605,23 @@ function removeRole() {
     //   }
     // })
     // roles = newRoles;
+    connection.query(`select * from role`, function (error, results, fields) {
+      if (error) throw error;
+      let chosenRole;
+      for (let i = 0; i < results.length; i++) {
+        if (roleTitles[i] === answers.role) {
+          chosenRole = results[i].id;
+        }
+      }
 
-    connection.query(`delete from role where title = '${answers.role}'`, function (error, results, fields) {
+    connection.query(`delete from role where id = ${chosenRole}`, function (error, results, fields) {
       if (error) throw error;
     });
 
     starterPrompt()
   })
   });
+});
 }
 
 //Remove employees
@@ -890,7 +913,17 @@ function viewBudget() {
     //   })
     // )
     // console.log('$' + budget);
-    starterPrompt()
+    return inquirer.prompt([
+      {
+        type: 'list',
+        name: 'return',
+        message: 'Hit enter to return home',
+        choices: [''],
+      },
+    ])
+    .then(answers => {
+      starterPrompt();
+    })
   })
 });
 // });
