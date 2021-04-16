@@ -377,11 +377,11 @@ function addRole() {
   ])
   .then(answers => {
     let departmentId;
-    for (let i = 0; i < departments.length; i++) {
-      if (answers.department === departments[i].name) {
-        departmentId = departments[i].id
-      }
-    }
+    // for (let i = 0; i < departments.length; i++) {
+    //   if (answers.department === departments[i].name) {
+    //     departmentId = departments[i].id
+    //   }
+    // }
     connection.query(`select id from department where department.name = '${answers.department}'`, function (error, results, fields) {
       if (error) throw error;
       departmentId = results[0].id;
@@ -527,26 +527,30 @@ function addEmployee() {
 
 //Remove departments
 function removeDept() {
-  let deptNames = [];
-  departments.forEach(i =>
-    deptNames.push(i.name)
-  )
+  // let deptNames = [];
+  // departments.forEach(i =>
+  //   deptNames.push(i.name)
+  // )
+  connection.query(`select name from department`, function (error, results, fields) {
+    if (error) throw error;
+    console.log(results)
+  
   return inquirer.prompt([
     {
       type: 'list',
       name: 'department',
       message: 'What is the department\'s name?',
-      choices: deptNames
+      choices: results
     },
   ])
   .then(answers => {
-    let newDepts = [];
-    departments.forEach(i => {
-      if (i.name !== answers.department) {
-        newDepts.push(i);
-      }
-    })
-    departments = newDepts;
+    // let newDepts = [];
+    // departments.forEach(i => {
+    //   if (i.name !== answers.department) {
+    //     newDepts.push(i);
+    //   }
+    // })
+    // departments = newDepts;
 
     connection.query(`delete from department where name = '${answers.department}'`, function (error, results, fields) {
       if (error) throw error;
@@ -554,14 +558,20 @@ function removeDept() {
 
     starterPrompt()
   })
+  });
 }
 
 //Remove roles
 function removeRole() {
   let roleTitles = [];
-  roles.forEach(i =>
-    roleTitles.push(i.title)
-  )
+  
+  connection.query(`select title from role`, function (error, results, fields) {
+    if (error) throw error;
+    console.log(results)
+    results.forEach(i =>
+      roleTitles.push(i.title)
+    )
+  
   return inquirer.prompt([
     {
       type: 'list',
@@ -571,13 +581,13 @@ function removeRole() {
     },
   ])
   .then(answers => {
-    let newRoles = [];
-    roles.forEach(i => {
-      if (i.title !== answers.role) {
-        newRoles.push(i);
-      }
-    })
-    roles = newRoles;
+    // let newRoles = [];
+    // roles.forEach(i => {
+    //   if (i.title !== answers.role) {
+    //     newRoles.push(i);
+    //   }
+    // })
+    // roles = newRoles;
 
     connection.query(`delete from role where title = '${answers.role}'`, function (error, results, fields) {
       if (error) throw error;
@@ -585,15 +595,21 @@ function removeRole() {
 
     starterPrompt()
   })
+  });
 }
 
 //Remove employees
 function removeEmployee() {
   let employeeNames = [];
 
-  employees.forEach(i =>
-    employeeNames.push(i.first_name + ' ' + i.last_name)
-  )
+  // employees.forEach(i =>
+  //   employeeNames.push(i.first_name + ' ' + i.last_name)
+  // )
+  connection.query(`select * from employee`, function (error, results, fields) {
+    if (error) throw error;
+    for (let i = 0; i < results.length; i++) {
+      employeeNames.push(results[i].first_name + ' ' + results[i].last_name)
+    }
 
   return inquirer.prompt([
     {
@@ -605,22 +621,31 @@ function removeEmployee() {
   ])
   .then(answers => {
     let deletedEmployee;
-    let newList = [];
-    for (let i = 0; i < employees.length; i++) {
-      if (employeeNames[i] !== answers.remove) {
-        newList.push(employees[i]);
-      } else {
-        deletedEmployee = employees[i];
+    // let newList = [];
+    // for (let i = 0; i < employees.length; i++) {
+    //   if (employeeNames[i] !== answers.remove) {
+    //     newList.push(employees[i]);
+    //   } else {
+    //     deletedEmployee = employees[i];
+    //   }
+    // }
+    // employees = newList;
+    connection.query(`select * from employee`, function (error, results, fields) {
+      if (error) throw error;
+      for (let i = 0; i < results.length; i++) {
+        if (employeeNames[i] === answers.remove) {
+          deletedEmployee = results[i];
+        }
       }
-    }
-    employees = newList;
 
-    connection.query(`delete from employee where id = '${deletedEmployee.id}'`, function (error, results, fields) {
+    connection.query(`delete from employee where id = ${deletedEmployee.id}`, function (error, results, fields) {
       if (error) throw error;
     });
 
     starterPrompt();
   })
+  });
+});
 }
 
 //Update role
