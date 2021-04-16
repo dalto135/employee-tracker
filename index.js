@@ -311,7 +311,7 @@ function addDept() {
   })
 }
 
-//Add roles
+//Add role
 function addRole() {
 
   connection.query('select * from department', function (error, results, fields) {
@@ -355,7 +355,7 @@ function addRole() {
   });
 }
 
-//Add employees
+//Add employee
 function addEmployee() {
   let roleTitles = [];
   connection.query('select title from role', function (error, results, fields) {
@@ -434,7 +434,7 @@ function addEmployee() {
   });
 }
 
-//Remove departments
+//Remove department
 function removeDept() {
   connection.query(`select * from department`, function (error, results, fields) {
     if (error) throw error;
@@ -471,7 +471,7 @@ function removeDept() {
   });
 }
 
-//Remove roles
+//Remove role
 function removeRole() {
   let roleTitles = [];
   
@@ -510,7 +510,7 @@ function removeRole() {
   });
 }
 
-//Remove employees
+//Remove employee
 function removeEmployee() {
   let employeeNames = [];
 
@@ -560,11 +560,11 @@ function updateRole() {
 
     let roleTitles = [];
     connection.query('select * from role', function (error, results, fields) {
-    if (error) throw error;
-    
-    for (let i = 0; i < results.length; i++) {
-      roleTitles.push(results[i].title);
-    }
+      if (error) throw error;
+      
+      for (let i = 0; i < results.length; i++) {
+        roleTitles.push(results[i].title);
+      }
     });
 
     return inquirer.prompt([
