@@ -714,8 +714,6 @@ function viewBudget() {
               for (let j = 0; j < deptRoles.length; j++) {
                 if (results[i].role_id === deptRoles[j].id) {
                   totalBudget += deptRoles[j].salary;
-                  console.log(deptRoles[j].title);
-                  console.log(deptRoles[j].salary);
                 }
               }
             }
