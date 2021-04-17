@@ -253,7 +253,7 @@ function viewAllByDept() {
 
   connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY department.name ASC", function (error, results, fields) {
     if (error) throw error;
-    console.table('Employees:', results);
+    console.table('Employees by Department:', results);
   });
 
   return inquirer.prompt([
@@ -274,7 +274,7 @@ function viewAllByManager() {
 
   connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY employee.manager_id ASC", function (error, results, fields) {
     if (error) throw error;
-    console.table('Employees:', results);
+    console.table('Employees by Manager:', results);
   });
 
   return inquirer.prompt([

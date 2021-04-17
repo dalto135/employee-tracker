@@ -6,7 +6,6 @@
 [Video Link](#Link)  
 [Technologies](#Technologies)  
 [Description](#Description)  
-[Screenshots](#Screenshots)  
 [License](#License)  
 [Contact](#Contact)
 
@@ -14,14 +13,10 @@
 https://dalto135.github.io/portfolio/
 
 ## Technologies
-HTML and CSS
+Javascript, Node, Inquirer
 
 ## Description
-A portfolio website designed to both provide my personal information and demonstrate various skills using html and css. For the displayed work, I have the first group project completed in the bootcamp as well as two exemplary homework assignments. Links to the git pages and github sites are available in this section.
-
-## Screenshots
-![Screenshot 1](images/screenshot1.png)
-![Screenshot 2](images/screenshot2.png)
+A program that uses Node and Inquirer to manipulate a SQL database of employees, departments and employee roles. Users can add and view departments, roles and employees, as well as update employee roles and use other features.
 
 ## License
 MIT
