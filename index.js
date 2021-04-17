@@ -63,10 +63,11 @@ let architect = new Role(Math.floor(Math.random() * 10000), 'Architect', 75000.0
 let roles = [manager, engineer, coder, intern, architect];
 
 //Managers
-let dalton = new Employee(Math.floor(Math.random() * 10000), 'Dalton', 'Wilkins', roles[0].id, Math.floor(Math.random() * 10000));
-let james = new Employee(Math.floor(Math.random() * 10000), 'James', 'Burns', roles[0].id, Math.floor(Math.random() * 10000));
-let kyle = new Employee(Math.floor(Math.random() * 10000), 'Kyle', 'Claassen', roles[0].id, Math.floor(Math.random() * 10000));
-let woody = new Employee(Math.floor(Math.random() * 10000), 'Woody', 'Walton', roles[0].id, Math.floor(Math.random() * 10000));
+let managerId = Math.floor(Math.random() * 10000);
+let dalton = new Employee(managerId, 'Dalton', 'Wilkins', roles[0].id, managerId);
+let james = new Employee(Math.floor(Math.random() * 10000), 'James', 'Burns', roles[0].id, managerId);
+let kyle = new Employee(Math.floor(Math.random() * 10000), 'Kyle', 'Claassen', roles[0].id, managerId);
+let woody = new Employee(Math.floor(Math.random() * 10000), 'Woody', 'Walton', roles[0].id, managerId);
 
 //Employees
 let barb = new Employee(Math.floor(Math.random() * 10000), 'Barb', 'Walters', roles[1].id, dalton.id);
@@ -233,7 +234,7 @@ function viewAllRoles() {
 //View all employees
 function viewAll() {
 
-  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id", function (error, results, fields) {
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.last_name AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees:', results);
   });
@@ -254,7 +255,7 @@ function viewAll() {
 //View all employees by department
 function viewAllByDept() {
 
-  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY department.name ASC", function (error, results, fields) {
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.last_name AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY department.name ASC", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees by Department:', results);
   });
@@ -275,7 +276,7 @@ function viewAllByDept() {
 //View all employees by manager
 function viewAllByManager() {
 
-  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id ORDER BY employee.manager_id ASC", function (error, results, fields) {
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.last_name AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY employee.manager_id ASC", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees by Manager:', results);
   });
