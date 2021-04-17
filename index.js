@@ -47,53 +47,56 @@ connection.query('create table employee (id int not null, first_name varchar(30)
 });
 
 //Department, Role and Employee objects created using imported classes
+
+//Departments
+let management = new Department(Math.floor(Math.random() * 10000), 'Management');
 let marketing = new Department(Math.floor(Math.random() * 10000), 'Marketing');
 let finance = new Department(Math.floor(Math.random() * 10000), 'Finance');
-let management = new Department(Math.floor(Math.random() * 10000), 'Management');
-let departments = [marketing, finance, management];
+let departments = [management, marketing, finance];
 
-let engineer = new Role(Math.floor(Math.random() * 10000), 'Engineer', 75000.00, departments[0].id);
-let intern = new Role(Math.floor(Math.random() * 10000), 'Intern', 75000.00, departments[1].id);
-let manager = new Role(Math.floor(Math.random() * 10000), 'Manager', 75000.00, departments[2].id);
-let roles = [engineer, intern, manager];
+//Roles
+let manager = new Role(Math.floor(Math.random() * 10000), 'Manager', 75000.00, departments[0].id);
+let engineer = new Role(Math.floor(Math.random() * 10000), 'Engineer', 75000.00, departments[1].id);
+let coder = new Role(Math.floor(Math.random() * 10000), 'Coder', 420069.69, departments[1].id);
+let intern = new Role(Math.floor(Math.random() * 10000), 'Intern', 75000.00, departments[2].id);
+let architect = new Role(Math.floor(Math.random() * 10000), 'Architect', 75000.00, departments[2].id);
+let roles = [manager, engineer, coder, intern, architect];
 
-let dalton = new Employee(Math.floor(Math.random() * 10000), 'Dalton', 'Wilkins', roles[2].id, Math.floor(Math.random() * 10000));
-let barb = new Employee(Math.floor(Math.random() * 10000), 'Barb', 'Walters', roles[0].id, dalton.id);
+//Managers
+let dalton = new Employee(Math.floor(Math.random() * 10000), 'Dalton', 'Wilkins', roles[0].id, Math.floor(Math.random() * 10000));
+let james = new Employee(Math.floor(Math.random() * 10000), 'James', 'Burns', roles[0].id, Math.floor(Math.random() * 10000));
+let kyle = new Employee(Math.floor(Math.random() * 10000), 'Kyle', 'Claassen', roles[0].id, Math.floor(Math.random() * 10000));
+let woody = new Employee(Math.floor(Math.random() * 10000), 'Woody', 'Walton', roles[0].id, Math.floor(Math.random() * 10000));
+
+//Employees
+let barb = new Employee(Math.floor(Math.random() * 10000), 'Barb', 'Walters', roles[1].id, dalton.id);
 let steve = new Employee(Math.floor(Math.random() * 10000), 'Steve', 'Steverson', roles[1].id, dalton.id);
-let employees = [dalton, barb, steve];
+let josh = new Employee(Math.floor(Math.random() * 10000), 'Josh', 'Johnson', roles[2].id, james.id);
+let alison = new Employee(Math.floor(Math.random() * 10000), 'Alison', 'Wonderland', roles[2].id, james.id);
+let bob = new Employee(Math.floor(Math.random() * 10000), 'Bob', 'Roberts', roles[3].id, kyle.id);
+let alex = new Employee(Math.floor(Math.random() * 10000), 'Alex', 'Anderson', roles[3].id, kyle.id);
+let david = new Employee(Math.floor(Math.random() * 10000), 'David', 'Smith', roles[4].id, woody.id);
+let caitlyn = new Employee(Math.floor(Math.random() * 10000), 'Caitlyn', 'Springfield', roles[4].id, woody.id);
+let employees = [dalton, james, kyle, woody, barb, steve, josh, alison, bob, alex, david, caitlyn];
 
-//Departments added to database
-connection.query(`insert into department (id, name) values (${marketing.id}, '${marketing.name}')`, function (error, results, fields) {
-  if (error) throw error;
-});
-connection.query(`insert into department (id, name) values (${finance.id}, '${finance.name}')`, function (error, results, fields) {
-  if (error) throw error;
-});
-connection.query(`insert into department (id, name) values (${management.id}, '${management.name}')`, function (error, results, fields) {
-  if (error) throw error;
-});
+//Inserts data into SQL database
+departments.forEach(i => {
+  connection.query(`insert into department (id, name) values (${i.id}, '${i.name}')`, function (error, results, fields) {
+    if (error) throw error;
+  });
+})
 
-//Roles added to database
-connection.query(`insert into role (id, title, salary, department_id) values (${engineer.id}, '${engineer.title}', ${engineer.salary}, ${engineer.department_id})`, function (error, results, fields) {
-  if (error) throw error;
-});
-connection.query(`insert into role (id, title, salary, department_id) values (${intern.id}, '${intern.title}', ${intern.salary}, ${intern.department_id})`, function (error, results, fields) {
-  if (error) throw error;
-});
-connection.query(`insert into role (id, title, salary, department_id) values (${manager.id}, '${manager.title}', ${manager.salary}, ${manager.department_id})`, function (error, results, fields) {
-  if (error) throw error;
-});
+roles.forEach(i => {
+  connection.query(`insert into role (id, title, salary, department_id) values (${i.id}, '${i.title}', ${i.salary}, ${i.department_id})`, function (error, results, fields) {
+    if (error) throw error;
+  });
+})
 
-//Employees added to database
-connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${dalton.id}, '${dalton.first_name}', '${dalton.last_name}', ${dalton.role_id}, ${dalton.manager_id})`, function (error, results, fields) {
-  if (error) throw error;
-});
-connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${barb.id}, '${barb.first_name}', '${barb.last_name}', ${barb.role_id}, ${barb.manager_id})`, function (error, results, fields) {
-  if (error) throw error;
-});
-connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${steve.id}, '${steve.first_name}', '${steve.last_name}', ${steve.role_id}, ${steve.manager_id})`, function (error, results, fields) {
-  if (error) throw error;
-});
+employees.forEach(i => {
+  connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${i.id}, '${i.first_name}', '${i.last_name}', ${i.role_id}, ${i.manager_id})`, function (error, results, fields) {
+    if (error) throw error;
+  });
+})
 
 //Validates user input for strings and ints
 const stringValidator = async (input) => {
@@ -290,7 +293,7 @@ function viewAllByManager() {
   })
 }
 
-//Add departments
+//Add department
 function addDept() {
   return inquirer.prompt([
     {
@@ -710,6 +713,8 @@ function viewBudget() {
               for (let j = 0; j < deptRoles.length; j++) {
                 if (results[i].role_id === deptRoles[j].id) {
                   totalBudget += deptRoles[j].salary;
+                  console.log(deptRoles[j].title);
+                  console.log(deptRoles[j].salary);
                 }
               }
             }
@@ -733,4 +738,4 @@ function viewBudget() {
   });
 }
 
-starterPrompt()
+starterPrompt();
