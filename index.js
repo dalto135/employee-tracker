@@ -234,7 +234,15 @@ function viewAllRoles() {
 //View all employees
 function viewAll() {
 
-  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.last_name AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id", function (error, results, fields) {
+  // connection.query(`select id from role where title = 'Manager'`, function (error, results, fields) {
+  //   if (error) throw error;
+  //   let roleId = results[0].id;
+
+  // connection.query(`select * from employee where role_id = ${roleId}`, function (error, results, fields) {
+  //   if (error) throw error;
+
+
+  connection.query(`SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.first_name AS 'manager first_name', manager.last_name AS 'manager last_name' FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id`, function (error, results, fields) {
     if (error) throw error;
     console.table('Employees:', results);
   });
@@ -250,12 +258,14 @@ function viewAll() {
   .then(answers => {
     starterPrompt()
   })
+// });
+// });
 }
 
 //View all employees by department
 function viewAllByDept() {
 
-  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.last_name AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY department.name ASC", function (error, results, fields) {
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.first_name AS 'manager first_name', manager.last_name AS 'manager last_name' FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY department.name ASC", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees by Department:', results);
   });
@@ -276,7 +286,7 @@ function viewAllByDept() {
 //View all employees by manager
 function viewAllByManager() {
 
-  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.last_name AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY employee.manager_id ASC", function (error, results, fields) {
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, manager.first_name AS 'manager first_name', manager.last_name AS 'manager last_name' FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY employee.manager_id ASC", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees by Manager:', results);
   });
