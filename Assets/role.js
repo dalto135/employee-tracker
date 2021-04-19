@@ -6,7 +6,6 @@ class Role {
         this.department_id = department_id;
     }
 
-
     getId() {
         return this.id;
     }

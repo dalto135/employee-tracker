@@ -64,7 +64,7 @@ let roles = [manager, engineer, coder, intern, architect];
 
 //Managers
 let managerId = Math.floor(Math.random() * 10000);
-let dalton = new Employee(managerId, 'Dalton', 'Wilkins', roles[0].id, managerId);
+let dalton = new Employee(managerId, 'Dalton', 'Wilkins', roles[0].id, null);
 let james = new Employee(Math.floor(Math.random() * 10000), 'James', 'Burns', roles[0].id, managerId);
 let kyle = new Employee(Math.floor(Math.random() * 10000), 'Kyle', 'Claassen', roles[0].id, managerId);
 let woody = new Employee(Math.floor(Math.random() * 10000), 'Woody', 'Walton', roles[0].id, managerId);
@@ -231,9 +231,28 @@ function viewAllRoles() {
   })
 }
 //View all employees
+// function viewAll() {
+//   connection.query(`SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, concat(manager.first_name, ' ', manager.last_name) AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id`, function (error, results, fields) {
+//     if (error) throw error;
+//     console.table('Employees:', results);
+//   });
+
+//   return inquirer.prompt([
+//     {
+//       type: 'list',
+//       name: 'return',
+//       message: 'Hit enter to return home',
+//       choices: [''],
+//     },
+//   ])
+//   .then(answers => {
+//     starterPrompt()
+//   })
+// }
+
 function viewAll() {
-  connection.query(`SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, concat(manager.first_name, ' ', manager.last_name) AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id`, function (error, results, fields) {
-    if (error) throw error;
+  connection.query(`SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, employee.manager_id AS manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id`, function (error, results, fields) {
+  if (error) throw error;
     console.table('Employees:', results);
   });
 
@@ -249,6 +268,25 @@ function viewAll() {
     starterPrompt()
   })
 }
+
+// function viewAll() {
+//   connection.query(`select employee.manager_id AS manager_id from employee WHERE EXITS (select concat(manager.first_name, ' ', manager.last_name) AS manager from employee INNER JOIN manager ON employee.manager_id)`, function (error, results, fields) {
+//     if (error) throw error;
+//     console.table('Employees:', results);
+//   });
+
+//   return inquirer.prompt([
+//     {
+//       type: 'list',
+//       name: 'return',
+//       message: 'Hit enter to return home',
+//       choices: [''],
+//     },
+//   ])
+//   .then(answers => {
+//     starterPrompt()
+//   })
+// }
 
 //View all employees by department
 function viewAllByDept() {
@@ -416,7 +454,6 @@ function addEmployee() {
             }
               
             let newEmployee = new Employee(Math.floor(Math.random() * 10000), answers.first_name, answers.last_name, getRole, chosenManager);
-            console.log(newEmployee);
 
             connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${newEmployee.id}, '${newEmployee.first_name}', '${newEmployee.last_name}', ${newEmployee.role_id}, ${newEmployee.manager_id})`, function (error, results, fields) {
               if (error) throw error;

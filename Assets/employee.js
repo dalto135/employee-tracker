@@ -7,7 +7,6 @@ class Employee {
         this.manager_id = manager_id;
     }
 
-
     getId() {
         return this.id;
     }
