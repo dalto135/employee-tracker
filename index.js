@@ -208,12 +208,11 @@ function viewAllDept() {
     },
   ])
   .then(answers => {
-    starterPrompt()
+    starterPrompt();
   })
 }
 //View all roles
 function viewAllRoles() {
-  
   connection.query("SELECT role.id AS id, role.title AS title, role.salary AS salary, department.name AS department FROM role JOIN department ON role.department_id = department.id", function (error, results, fields) {
     if (error) throw error;
     console.table('Roles:', results);
@@ -233,7 +232,6 @@ function viewAllRoles() {
 }
 //View all employees
 function viewAll() {
-
   connection.query(`SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, concat(manager.first_name, ' ', manager.last_name) AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id`, function (error, results, fields) {
     if (error) throw error;
     console.table('Employees:', results);
@@ -254,7 +252,6 @@ function viewAll() {
 
 //View all employees by department
 function viewAllByDept() {
-
   connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, concat(manager.first_name, ' ', manager.last_name) AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY department.name ASC", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees by Department:', results);
@@ -275,7 +272,6 @@ function viewAllByDept() {
 
 //View all employees by manager
 function viewAllByManager() {
-
   connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, concat(manager.first_name, ' ', manager.last_name) AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY employee.manager_id ASC", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees by Manager:', results);
@@ -310,14 +306,12 @@ function addDept() {
     connection.query(`insert into department (id, name) values (${newDepartment.id}, '${newDepartment.name}')`, function (error, results, fields) {
       if (error) throw error;
     });
-  
     starterPrompt()
   })
 }
 
 //Add role
 function addRole() {
-
   connection.query('select * from department', function (error, results, fields) {
     if (error) throw error;
 
@@ -352,9 +346,8 @@ function addRole() {
         connection.query(`insert into role (id, title, salary, department_id) values (${newRole.id}, '${newRole.title}', ${newRole.salary}, ${newRole.department_id})`, function (error, results, fields) {
           if (error) throw error;
         });
-    
-        starterPrompt()
       })
+      starterPrompt();
     });
   });
 }
@@ -362,77 +355,75 @@ function addRole() {
 //Add employee
 function addEmployee() {
   let roleTitles = [];
-  connection.query('select title from role', function (error, results, fields) {
+  connection.query('select * from role', function (error, results, fields) {
     if (error) throw error;
     for (let i = 0; i < results.length; i++) {
       roleTitles.push(results[i].title);
     }
   
-    let managers = [];
-    let roleId = [];  
-    connection.query(`select * from role where title = 'Manager'`, function (error, results, fields) {
+    // let managers = [];
+    let employeeNames = [];  
+    connection.query(`select * from employee`, function (error, results, fields) {
       if (error) throw error;
       for (let i = 0; i < results.length; i++) {
-        roleId.push(results[i].id);
+        employeeNames.push(results[i].first_name + ' ' + results[i].last_name);
       }
+      employeeNames.push('None');
 
-      connection.query(`select * from employee where role_id = ${roleId[0]}`, function (error, results, fields) {
-        if (error) throw error;
-        for (let i = 0; i < results.length; i++) {
-          managers.push(results[i].first_name + ' ' + results[i].last_name);
-        }
+      return inquirer.prompt([
+        {
+          type: 'input',
+          name: 'first_name',
+          message: 'What is the employee\'s first name?',
+          validate: stringValidator,
+        },
+        {
+          type: 'input',
+          name: 'last_name',
+          message: 'What is the employee\'s last name?',
+          validate: stringValidator,
+        },
+        {
+          type: 'list',
+          name: 'role',
+          message: 'What is the employee\'s role?',
+          choices: roleTitles,
+        },
+        {
+          type: 'list',
+          name: 'manager',
+          message: 'Who is the employee\'s manager?',
+          choices: employeeNames,
+        },
+      ])
+      .then(answers => {
+        let getRole;
+        connection.query(`select * from role where title = '${answers.role}'`, function (error, results, fields) {
+          if (error) throw error;
+          getRole = results[0].id;
 
-        return inquirer.prompt([
-          {
-            type: 'input',
-            name: 'first_name',
-            message: 'What is the employee\'s first name?',
-            validate: stringValidator,
-          },
-          {
-            type: 'input',
-            name: 'last_name',
-            message: 'What is the employee\'s last name?',
-            validate: stringValidator,
-          },
-          {
-            type: 'list',
-            name: 'role',
-            message: 'What is the employee\'s role?',
-            choices: roleTitles,
-          },
-          {
-            type: 'list',
-            name: 'manager',
-            message: 'Who is the employee\'s manager?',
-            choices: managers,
-          },
-        ])
-        .then(answers => {
-          let getRole;
-          connection.query(`select id from role where title = '${answers.role}'`, function (error, results, fields) {
+          let chosenManager;
+          connection.query(`select * from employee`, function (error, results, fields) {
             if (error) throw error;
-            getRole = results[0].id;
-
-            let chosenManager;
-            connection.query(`select * from employee where role_id = ${roleId[0]}`, function (error, results, fields) {
-              if (error) throw error;
+            if (answers.manager === 'None') {
+              chosenManager = null;
+            } else {
               for (let i = 0; i < results.length; i++) {
-                if (managers[i] === answers.manager) {
+                if (employeeNames[i] === answers.manager) {
                   chosenManager = results[i].id;
                 }
               }
-            
-              let newEmployee = new Employee(Math.floor(Math.random() * 10000), answers.first_name, answers.last_name, getRole, chosenManager);
+            }
+              
+            let newEmployee = new Employee(Math.floor(Math.random() * 10000), answers.first_name, answers.last_name, getRole, chosenManager);
+            console.log(newEmployee);
 
-              connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${newEmployee.id}, '${newEmployee.first_name}', '${newEmployee.last_name}', ${newEmployee.role_id}, ${newEmployee.manager_id})`, function (error, results, fields) {
-                if (error) throw error;
-              });
-
-              starterPrompt()
-            })
-          });
+            connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${newEmployee.id}, '${newEmployee.first_name}', '${newEmployee.last_name}', ${newEmployee.role_id}, ${newEmployee.manager_id})`, function (error, results, fields) {
+              if (error) throw error;
+            });
+          })
         });
+        starterPrompt();
       });
     });
   });
@@ -468,9 +459,8 @@ function removeDept() {
         connection.query(`delete from department where id = ${deptId}`, function (error, results, fields) {
           if (error) throw error;
         });
-
-        starterPrompt()
       })
+      starterPrompt();
     });
   });
 }
@@ -478,7 +468,6 @@ function removeDept() {
 //Remove role
 function removeRole() {
   let roleTitles = [];
-  
   connection.query(`select title from role`, function (error, results, fields) {
     if (error) throw error;
     results.forEach(i =>
@@ -494,7 +483,6 @@ function removeRole() {
       },
     ])
     .then(answers => {
-   
       connection.query(`select * from role`, function (error, results, fields) {
         if (error) throw error;
         let chosenRole;
@@ -507,9 +495,8 @@ function removeRole() {
         connection.query(`delete from role where id = ${chosenRole}`, function (error, results, fields) {
           if (error) throw error;
         });
-
-        starterPrompt()
       })
+      starterPrompt();
     });
   });
 }
@@ -538,16 +525,15 @@ function removeEmployee() {
         if (error) throw error;
         for (let i = 0; i < results.length; i++) {
           if (employeeNames[i] === answers.remove) {
-            deletedEmployee = results[i];
+            deletedEmployee = results[i].id;
           }
         }
 
-        connection.query(`delete from employee where id = ${deletedEmployee.id}`, function (error, results, fields) {
+        connection.query(`delete from employee where id = ${deletedEmployee}`, function (error, results, fields) {
           if (error) throw error;
         });
-
-        starterPrompt();
       })
+      starterPrompt();
     });
   });
 }
@@ -555,7 +541,6 @@ function removeEmployee() {
 //Update role
 function updateRole() {
   let employeeNames = [];
-
   connection.query('select * from employee', function (error, results, fields) {
     if (error) throw error;
     for (let i = 0; i < results.length; i++) {
@@ -627,58 +612,57 @@ function updateManager() {
     }
 
     let managers = [];
-    let roleId = [];
-    connection.query(`select * from role where title = 'Manager'`, function (error, results, fields) {
+    connection.query(`select * from employee`, function (error, results, fields) {
       if (error) throw error;
       for (let i = 0; i < results.length; i++) {
-        roleId.push(results[i].id);
+        managers.push(results[i].first_name + ' ' + results[i].last_name);
       }
-  
-      connection.query(`select * from employee where role_id = ${roleId[0]}`, function (error, results, fields) {
-        if (error) throw error;
-        for (let i = 0; i < results.length; i++) {
-          managers.push(results[i].first_name + ' ' + results[i].last_name);
-        }
+      managers.push('None');
 
-        return inquirer.prompt([
-          {
-            type: 'list',
-            name: 'employee',
-            message: "Choose an employee",
-            choices: employeeNames,
-          },
-          {
-            type: 'list',
-            name: 'manager',
-            message: 'Who is the employee\'s new manager?',
-            choices: managers,
-          },
-        ])
-        .then(answers => {
-          let chosenEmployee;
-          let chosenManager;
-          connection.query('select * from employee', function (error, results, fields) {
-            if (error) throw error;
-            for (let i = 0; i < results.length; i++) {
-              if (employeeNames[i] === answers.employee) {
-                chosenEmployee = results[i];
-              }
+      return inquirer.prompt([
+        {
+          type: 'list',
+          name: 'employee',
+          message: "Choose an employee",
+          choices: employeeNames,
+        },
+        {
+          type: 'list',
+          name: 'manager',
+          message: 'Who is the employee\'s new manager?',
+          choices: managers,
+        },
+      ])
+      .then(answers => {
+        let chosenEmployee;
+        let chosenManager;
+        connection.query('select * from employee', function (error, results, fields) {
+          if (error) throw error;
+          for (let i = 0; i < results.length; i++) {
+            if (employeeNames[i] === answers.employee) {
+              chosenEmployee = results[i].id;
             }
-            connection.query(`select * from employee where role_id = ${roleId[0]}`, function (error, results, fields) {
-              if (error) throw error;
+          }
+          connection.query(`select * from employee`, function (error, results, fields) {
+            if (error) throw error;
+            if (answers.manager === 'None') {
+              chosenManager = null;
+              console.log(chosenManager);
+            } else {
               for (let i = 0; i < results.length; i++) {
                 if (managers[i] === answers.manager) {
-                  chosenManager = results[i];
+                  chosenManager = results[i].id;
                 }
               }
-
-              connection.query(`update employee set manager_id = ${chosenManager.id} where employee.id = ${chosenEmployee.id}`, function (error, results, fields) {
-                if (error) throw error;
-                starterPrompt();
-              })
-            });
+            }
+              
+            connection.query(`update employee set manager_id = ${chosenManager} where employee.id = ${chosenEmployee}`, function (error, results, fields) {
+              if (error) throw error;
+                
+            })
           });
         });
+        starterPrompt();
       });
     });
   });
