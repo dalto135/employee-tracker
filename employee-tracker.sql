@@ -1,5 +1,7 @@
+DROP DATABASE IF EXISTS employee_trackerdb;
 create database employee_trackerdb;
 use employee_trackerdb;
+
 create table department (
 	id int not null,
 	name varchar(30),
