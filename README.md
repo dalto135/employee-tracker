@@ -4,6 +4,7 @@
 
 ## Table of Contents
 [Video Link](#Link)  
+[Screenshot](#Screenshot)  
 [Technologies](#Technologies)  
 [Description](#Description)  
 [License](#License)  
@@ -11,6 +12,9 @@
 
 ## Link
  https://drive.google.com/file/d/1PRgjvLbEubjJbmaixVOPNbvKF6S-0zwB/view
+
+## Screenshot
+![Screenshot](assets/images/screenshot.png)
 
 ## Technologies
 Javascript, Node, Inquirer

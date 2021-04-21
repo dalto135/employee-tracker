@@ -399,7 +399,6 @@ function addEmployee() {
       roleTitles.push(results[i].title);
     }
   
-    // let managers = [];
     let employeeNames = [];  
     connection.query(`select * from employee`, function (error, results, fields) {
       if (error) throw error;
