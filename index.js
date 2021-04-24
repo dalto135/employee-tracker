@@ -27,13 +27,13 @@ connection.connect(function(err) {
 });
 
 //Clears database
-connection.query('drop table employee', function (error, results, fields) {
+connection.query('drop table if exists employee', function (error, results, fields) {
   if (error) throw error;
 });
-connection.query('drop table role', function (error, results, fields) {
+connection.query('drop table if exists role', function (error, results, fields) {
   if (error) throw error;
 });
-connection.query('drop table department', function (error, results, fields) {
+connection.query('drop table if exists department', function (error, results, fields) {
   if (error) throw error;
 });
 
