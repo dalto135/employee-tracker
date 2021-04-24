@@ -41,7 +41,7 @@ connection.query('drop table if exists department', function (error, results, fi
 connection.query('create table department (id int not null, name varchar(30), primary key (id))', function (error, results, fields) {
   if (error) throw error;
 });
-connection.query('create table role (id int not null, title varchar(30), salary decimal, department_id int, primary key (id))', function (error, results, fields) {
+connection.query('create table role (id int not null, title varchar(30), salary decimal(11,2), department_id int, primary key (id))', function (error, results, fields) {
   if (error) throw error;
 });
 connection.query('create table employee (id int not null, first_name varchar(30), last_name varchar(30), role_id int, manager_id int, primary key (id))', function (error, results, fields) {
@@ -739,7 +739,7 @@ function viewBudget() {
                 }
               }
             }
-            console.log('Total Budget: $' + totalBudget);
+            console.log('Total Budget: $' + totalBudget.toFixed(2));
 
             return inquirer.prompt([
               {
