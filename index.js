@@ -6,16 +6,18 @@ const Employee = require('./assets/employee');
 //Require statements
 const inquirer = require('inquirer');
 const cTable = require('console.table');
+require('dotenv').config();
 
 //mysql functionality
 const mysql = require('mysql');
 var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'biscuitbill',
+  host     :  process.env.DB_NAME,
+  user     :  process.env.DB_USER,
+  password :  process.env.DB_PASSWORD,
   database : 'employee_trackerdb'
 });
- 
+
+
 connection.connect(function(err) {
   if (err) {
     console.error('error connecting: ' + err.stack);
@@ -24,80 +26,80 @@ connection.connect(function(err) {
   console.log('connected as id ' + connection.threadId);
 });
 
-// //Clears database
-// connection.query('drop table employee', function (error, results, fields) {
-//   if (error) throw error;
-// });
-// connection.query('drop table role', function (error, results, fields) {
-//   if (error) throw error;
-// });
-// connection.query('drop table department', function (error, results, fields) {
-//   if (error) throw error;
-// });
+//Clears database
+connection.query('drop table employee', function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query('drop table role', function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query('drop table department', function (error, results, fields) {
+  if (error) throw error;
+});
 
-// //Creates new tables
-// connection.query('create table department (id int not null, name varchar(30), primary key (id))', function (error, results, fields) {
-//   if (error) throw error;
-// });
-// connection.query('create table role (id int not null, title varchar(30), salary decimal, department_id int, primary key (id))', function (error, results, fields) {
-//   if (error) throw error;
-// });
-// connection.query('create table employee (id int not null, first_name varchar(30), last_name varchar(30), role_id int, manager_id int, primary key (id))', function (error, results, fields) {
-//   if (error) throw error;
-// });
+//Creates new tables
+connection.query('create table department (id int not null, name varchar(30), primary key (id))', function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query('create table role (id int not null, title varchar(30), salary decimal, department_id int, primary key (id))', function (error, results, fields) {
+  if (error) throw error;
+});
+connection.query('create table employee (id int not null, first_name varchar(30), last_name varchar(30), role_id int, manager_id int, primary key (id))', function (error, results, fields) {
+  if (error) throw error;
+});
 
-// //Department, Role and Employee objects created using imported classes
+//Department, Role and Employee objects created using imported classes
 
-// //Departments
-// let management = new Department(Math.floor(Math.random() * 10000), 'Management');
-// let marketing = new Department(Math.floor(Math.random() * 10000), 'Marketing');
-// let finance = new Department(Math.floor(Math.random() * 10000), 'Finance');
-// let departments = [management, marketing, finance];
+//Departments
+let management = new Department(Math.floor(Math.random() * 10000), 'Management');
+let marketing = new Department(Math.floor(Math.random() * 10000), 'Marketing');
+let finance = new Department(Math.floor(Math.random() * 10000), 'Finance');
+let departments = [management, marketing, finance];
 
-// //Roles
-// let manager = new Role(Math.floor(Math.random() * 10000), 'Manager', 75000.00, departments[0].id);
-// let engineer = new Role(Math.floor(Math.random() * 10000), 'Engineer', 75000.00, departments[1].id);
-// let coder = new Role(Math.floor(Math.random() * 10000), 'Coder', 420069.69, departments[1].id);
-// let intern = new Role(Math.floor(Math.random() * 10000), 'Intern', 75000.00, departments[2].id);
-// let architect = new Role(Math.floor(Math.random() * 10000), 'Architect', 75000.00, departments[2].id);
-// let roles = [manager, engineer, coder, intern, architect];
+//Roles
+let manager = new Role(Math.floor(Math.random() * 10000), 'Manager', 75000.00, departments[0].id);
+let engineer = new Role(Math.floor(Math.random() * 10000), 'Engineer', 75000.00, departments[1].id);
+let coder = new Role(Math.floor(Math.random() * 10000), 'Coder', 420069.69, departments[1].id);
+let intern = new Role(Math.floor(Math.random() * 10000), 'Intern', 75000.00, departments[2].id);
+let architect = new Role(Math.floor(Math.random() * 10000), 'Architect', 75000.00, departments[2].id);
+let roles = [manager, engineer, coder, intern, architect];
 
-// //Managers
-// let managerId = Math.floor(Math.random() * 10000);
-// let dalton = new Employee(managerId, 'Dalton', 'Wilkins', roles[0].id, null);
-// let james = new Employee(Math.floor(Math.random() * 10000), 'James', 'Burns', roles[0].id, managerId);
-// let kyle = new Employee(Math.floor(Math.random() * 10000), 'Kyle', 'Claassen', roles[0].id, managerId);
-// let woody = new Employee(Math.floor(Math.random() * 10000), 'Woody', 'Walton', roles[0].id, managerId);
+//Managers
+let managerId = Math.floor(Math.random() * 10000);
+let dalton = new Employee(managerId, 'Dalton', 'Wilkins', roles[0].id, null);
+let james = new Employee(Math.floor(Math.random() * 10000), 'James', 'Burns', roles[0].id, managerId);
+let kyle = new Employee(Math.floor(Math.random() * 10000), 'Kyle', 'Claassen', roles[0].id, managerId);
+let woody = new Employee(Math.floor(Math.random() * 10000), 'Woody', 'Walton', roles[0].id, managerId);
 
-// //Employees
-// let barb = new Employee(Math.floor(Math.random() * 10000), 'Barb', 'Walters', roles[1].id, dalton.id);
-// let steve = new Employee(Math.floor(Math.random() * 10000), 'Steve', 'Steverson', roles[1].id, dalton.id);
-// let josh = new Employee(Math.floor(Math.random() * 10000), 'Josh', 'Johnson', roles[2].id, james.id);
-// let alison = new Employee(Math.floor(Math.random() * 10000), 'Alison', 'Wonderland', roles[2].id, james.id);
-// let bob = new Employee(Math.floor(Math.random() * 10000), 'Bob', 'Roberts', roles[3].id, kyle.id);
-// let alex = new Employee(Math.floor(Math.random() * 10000), 'Alex', 'Anderson', roles[3].id, kyle.id);
-// let david = new Employee(Math.floor(Math.random() * 10000), 'David', 'Smith', roles[4].id, woody.id);
-// let caitlyn = new Employee(Math.floor(Math.random() * 10000), 'Caitlyn', 'Springfield', roles[4].id, woody.id);
-// let employees = [dalton, james, kyle, woody, barb, steve, josh, alison, bob, alex, david, caitlyn];
+//Employees
+let barb = new Employee(Math.floor(Math.random() * 10000), 'Barb', 'Walters', roles[1].id, dalton.id);
+let steve = new Employee(Math.floor(Math.random() * 10000), 'Steve', 'Steverson', roles[1].id, dalton.id);
+let josh = new Employee(Math.floor(Math.random() * 10000), 'Josh', 'Johnson', roles[2].id, james.id);
+let alison = new Employee(Math.floor(Math.random() * 10000), 'Alison', 'Wonderland', roles[2].id, james.id);
+let bob = new Employee(Math.floor(Math.random() * 10000), 'Bob', 'Roberts', roles[3].id, kyle.id);
+let alex = new Employee(Math.floor(Math.random() * 10000), 'Alex', 'Anderson', roles[3].id, kyle.id);
+let david = new Employee(Math.floor(Math.random() * 10000), 'David', 'Smith', roles[4].id, woody.id);
+let caitlyn = new Employee(Math.floor(Math.random() * 10000), 'Caitlyn', 'Springfield', roles[4].id, woody.id);
+let employees = [dalton, james, kyle, woody, barb, steve, josh, alison, bob, alex, david, caitlyn];
 
-// //Inserts data into SQL database
-// departments.forEach(i => {
-//   connection.query(`insert into department (id, name) values (${i.id}, '${i.name}')`, function (error, results, fields) {
-//     if (error) throw error;
-//   });
-// })
+//Inserts data into SQL database
+departments.forEach(i => {
+  connection.query(`insert into department (id, name) values (${i.id}, '${i.name}')`, function (error, results, fields) {
+    if (error) throw error;
+  });
+})
 
-// roles.forEach(i => {
-//   connection.query(`insert into role (id, title, salary, department_id) values (${i.id}, '${i.title}', ${i.salary}, ${i.department_id})`, function (error, results, fields) {
-//     if (error) throw error;
-//   });
-// })
+roles.forEach(i => {
+  connection.query(`insert into role (id, title, salary, department_id) values (${i.id}, '${i.title}', ${i.salary}, ${i.department_id})`, function (error, results, fields) {
+    if (error) throw error;
+  });
+})
 
-// employees.forEach(i => {
-//   connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${i.id}, '${i.first_name}', '${i.last_name}', ${i.role_id}, ${i.manager_id})`, function (error, results, fields) {
-//     if (error) throw error;
-//   });
-// })
+employees.forEach(i => {
+  connection.query(`insert into employee (id, first_name, last_name, role_id, manager_id) values (${i.id}, '${i.first_name}', '${i.last_name}', ${i.role_id}, ${i.manager_id})`, function (error, results, fields) {
+    if (error) throw error;
+  });
+})
 
 //Validates user input for strings and ints
 const stringValidator = async (input) => {
@@ -290,7 +292,7 @@ function viewAll() {
 
 //View all employees by department
 function viewAllByDept() {
-  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, concat(manager.first_name, ' ', manager.last_name) AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id = employee.manager_id ORDER BY department.name ASC", function (error, results, fields) {
+  connection.query("SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS title, department.name AS department, role.salary AS salary, concat(manager.first_name, ' ', manager.last_name) AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id INNER JOIN employee AS manager ON manager.id <=> employee.manager_id ORDER BY department.id ASC", function (error, results, fields) {
     if (error) throw error;
     console.table('Employees by Department:', results);
   });
