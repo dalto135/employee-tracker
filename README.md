@@ -3,14 +3,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Table of Contents
-[Video Link](#Link)  
+[Video Link](#Video)  
 [Screenshot](#Screenshot)  
 [Technologies](#Technologies)  
 [Description](#Description)  
 [License](#License)  
 [Contact](#Contact)
 
-## Link
+## Video
 https://drive.google.com/file/d/1PRgjvLbEubjJbmaixVOPNbvKF6S-0zwB/view
 
 ## Screenshot
