@@ -26,4 +26,4 @@ A program that uses Node and Inquirer to manipulate a SQL database of employees,
 MIT
 
 ## Contact
-Dalton Wilkins - wilkins.271@osu.edu
+Dalton Wilkins - daltongh@gmail.com
