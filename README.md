@@ -20,7 +20,7 @@ https://drive.google.com/file/d/1PRgjvLbEubjJbmaixVOPNbvKF6S-0zwB/view
 Javascript, Node, Inquirer, dotenv
 
 ## Description
-A program that uses Node and Inquirer to manipulate a SQL database of employees, departments and employee roles. Users can add and view departments, roles and employees, as well as update employee roles and managers, delete departments, roles and employees, and view the utilized budget of a department. Users can also view employees by department or manager.
+A program that allows companies to keep track of and manage information related to their employees. It uses Node and Inquirer to manipulate a SQL database of employees, departments and employee roles. Users can add and view departments, roles and employees, as well as update employee roles and managers, delete departments, roles and employees, and view the utilized budget of a department. Users can also view employees by department or manager.
 
 ## License
 MIT
